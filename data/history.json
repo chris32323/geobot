@@ -1,4 +1,16 @@
 {
   "posted": [],
-  "no_coverage": []
+  "no_coverage": [
+    "hallstatt-at",
+    "rio-br",
+    "dublin-ie",
+    "istanbul-tr",
+    "dubrovnik-hr",
+    "bangkok-th",
+    "tuscany-it",
+    "santiago-cl",
+    "paris-fr",
+    "amsterdam-nl",
+    "sf-us"
+  ]
 }

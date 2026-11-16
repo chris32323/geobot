@@ -30,7 +30,10 @@ MIN_PANO_WIDTH = int(os.getenv("MIN_PANO_WIDTH", "3000"))
 
 # ---- Instagram (Instagram API with Instagram Login)
 IG_API = os.getenv("IG_API", "https://graph.instagram.com/v26.0")
-IG_USER_ID = os.getenv("IG_USER_ID", "")
+IG_USER_ID = os.getenv("IG_USER_ID", "").strip().strip('"').strip()
+IG_ACCESS_TOKEN = "".join(os.getenv("IG_ACCESS_TOKEN", "").split()).strip('"\'')
+
+HASHTAGS = os.getenv("HASHTAGS", "#geoguessr #geography #travel #guessthelocation #maps #quiz #streetview")
 IG_ACCESS_TOKEN = os.getenv("IG_ACCESS_TOKEN", "")
 
 HASHTAGS = os.getenv("HASHTAGS", "#geoguessr #geography #travel #guessthelocation #maps #quiz #streetview")

@@ -1,5 +1,19 @@
 {
-  "posted": [],
+  "posted": [
+    {
+      "date": "2026-11-16T21:44:40+00:00",
+      "media_id": "18104767445344376",
+      "permalink": "https://www.instagram.com/reel/Df0WgfxlFG2/",
+      "location_ids": [
+        "seoul-kr",
+        "cusco-pe"
+      ],
+      "places": [
+        "Seoul, South Korea",
+        "Cusco, Peru"
+      ]
+    }
+  ],
   "no_coverage": [
     "hallstatt-at",
     "rio-br",
@@ -19,6 +33,11 @@
     "tokyo-jp",
     "dubai-ae",
     "nyc-us",
-    "havana-cu"
+    "havana-cu",
+    "sydney-au",
+    "chicago-us",
+    "kitzbuehel-at",
+    "helsinki-fi",
+    "vermont-us"
   ]
 }

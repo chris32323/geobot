@@ -1,0 +1,90 @@
+name: Daily GeoGuess Reel
+
+on:
+  schedule:
+    - cron: "17 16 * * *"        # every day 16:17 UTC (17:17 Berlin winter time / 18:17 summer time)
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Only render + upload the video, do NOT post to Instagram"
+        type: boolean
+        default: true
+
+permissions:
+  contents: write                 # create releases (video hosting) + commit history.json
+
+concurrency:
+  group: geobot
+  cancel-in-progress: false
+
+jobs:
+  reel:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install ffmpeg + Python packages
+        run: |
+          sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg
+          pip install -r requirements.txt
+
+      - name: Cache map data + voice model
+        uses: actions/cache@v4
+        with:
+          path: |
+            data/naturalearth
+            models
+          key: assets-${{ vars.PIPER_VOICE || 'en_US-ryan-high' }}-v1
+
+      - name: Download map data + voice model
+        env:
+          PIPER_VOICE: ${{ vars.PIPER_VOICE || 'en_US-ryan-high' }}
+        run: bash scripts/fetch_assets.sh
+
+      - name: Render reel (real Mapillary panoramas + AI voice)
+        env:
+          MAPILLARY_TOKEN: ${{ secrets.MAPILLARY_TOKEN }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          TTS_ENGINE: ${{ vars.TTS_ENGINE || 'piper' }}
+          PIPER_VOICE: ${{ vars.PIPER_VOICE || 'en_US-ryan-high' }}
+          ROUNDS_PER_REEL: ${{ vars.ROUNDS_PER_REEL || '2' }}
+        run: python -m bot.main render --out out
+
+      - name: Host video as GitHub release asset (public URL for Instagram)
+        id: host
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          TAG="reel-$(date -u +%Y%m%d-%H%M%S)"
+          gh release create "$TAG" out/reel.mp4 --title "$TAG" --notes-file out/caption.txt
+          echo "url=https://github.com/${{ github.repository }}/releases/download/$TAG/reel.mp4" >> "$GITHUB_OUTPUT"
+
+      - name: Publish to Instagram
+        if: github.event_name == 'schedule' || inputs.dry_run == false
+        env:
+          IG_USER_ID: ${{ secrets.IG_USER_ID }}
+          IG_ACCESS_TOKEN: ${{ secrets.IG_ACCESS_TOKEN }}
+        run: python -m bot.main publish --out out --video-url "${{ steps.host.outputs.url }}"
+
+      - name: Save history (also keeps the schedule alive)
+        if: always()
+        run: |
+          git config user.name "geobot"
+          git config user.email "geobot@users.noreply.github.com"
+          git add data/history.json
+          git commit -m "history: $(date -u +%F)" || echo "nothing to commit"
+          git push || true
+
+      - name: Delete old video releases (keep last 10)
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release list --limit 100 --json tagName,createdAt -q 'sort_by(.createdAt) | reverse | .[10:] | .[].tagName' \
+            | grep '^reel-' | while read -r t; do gh release delete "$t" --yes --cleanup-tag; done || true

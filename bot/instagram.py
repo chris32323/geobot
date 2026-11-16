@@ -66,4 +66,3 @@ def refresh_token(token=IG_ACCESS_TOKEN):
     j = _check(requests.get("https://graph.instagram.com/refresh_access_token",
                             params=dict(grant_type="ig_refresh_token", access_token=token), timeout=60))
     return j["access_token"], j.get("expires_in")
-

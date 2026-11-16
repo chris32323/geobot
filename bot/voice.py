@@ -3,15 +3,23 @@ import os, subprocess, wave
 from pathlib import Path
 import numpy as np
 import requests
-from .config import TTS_ENGINE, PIPER_VOICE, MODELS, OPENAI_VOICE, OPENAI_TTS_MODEL
+from .config import TTS_ENGINE, PIPER_VOICE, MODELS, OPENAI_VOICE, OPENAI_TTS_MODEL, VOICE_PITCH
 
 SR = 44100
 
 
-def _wav_to_array(path):
-    """Load any wav, return mono float32 at 44.1 kHz (resampled with ffmpeg)."""
+def _wav_to_array(path, tempo=1.0, pitch=1.0):
+    """Load any wav -> mono float32 at 44.1 kHz. pitch<1 = deeper (same speed), tempo>1 = faster."""
     out = str(path) + ".44k.wav"
-    subprocess.run(["ffmpeg", "-y", "-loglevel", "error", "-i", str(path), "-ac", "1", "-ar", str(SR), out], check=True)
+    filters = []
+    if abs(pitch - 1.0) > 1e-3:
+        filters += [f"asetrate={int(SR * pitch)}", f"aresample={SR}", f"atempo={1 / pitch:.4f}"]
+    if abs(tempo - 1.0) > 1e-3:
+        filters.append(f"atempo={tempo:.4f}")
+    cmd = ["ffmpeg", "-y", "-loglevel", "error", "-i", str(path), "-ac", "1", "-ar", str(SR)]
+    if filters:
+        cmd = ["ffmpeg", "-y", "-loglevel", "error", "-i", str(path), "-af", f"aresample={SR}," + ",".join(filters), "-ac", "1", "-ar", str(SR)]
+    subprocess.run(cmd + [out], check=True)
     with wave.open(out, "rb") as w:
         a = np.frombuffer(w.readframes(w.getnframes()), np.int16).astype(np.float32) / 32768
     return a
@@ -59,11 +67,7 @@ class Voice:
             self._openai_wav(text, raw)
         else:
             self._piper_wav(text, raw)
-        a = _wav_to_array(raw)
+        a = _wav_to_array(raw, pitch=VOICE_PITCH)
         if max_len and len(a) / SR > max_len:
-            tempo = min(len(a) / SR / max_len, 1.35)
-            fast = self.dir / f"line{self.n:02d}_fast.wav"
-            subprocess.run(["ffmpeg", "-y", "-loglevel", "error", "-i", str(raw), "-filter:a", f"atempo={tempo:.3f}",
-                            "-ac", "1", "-ar", str(SR), str(fast)], check=True)
-            a = _wav_to_array(fast)
+            a = _wav_to_array(raw, tempo=min(len(a) / SR / max_len, 1.35), pitch=VOICE_PITCH)
         return a

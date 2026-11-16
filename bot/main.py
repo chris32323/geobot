@@ -13,14 +13,21 @@ from . import config
 HISTORY = config.DATA / "history.json"
 LOCATIONS = config.DATA / "locations.json"
 
-INTROS = [("ROUND 1", "WHERE ARE WE?", "Find it before the timer runs out"),
-          ("ROUND 2", "STILL IN?", "It gets harder now"),
-          ("FINAL ROUND", "LAST CHANCE!", "Only the pros get this one")]
+def intro_for(slot, n):
+    if slot == 0:
+        return ("ROUND 1", "WHERE ARE WE?", config.TITLE_EDITION)
+    if n >= 3 and slot == n - 1:
+        return ("FINAL ROUND", "LAST CHANCE!", "Only the pros get this one")
+    return (f"ROUND {slot + 1}", "STILL IN?", "It gets harder now")
+
 SAY_INTRO = ["Where are we?", "Still in?", "Final round!"]
-SAY_PAN1 = ["Look around. Every detail counts.", "This one is tricky.", "Last one. Make it count."]
-SAY_GUESS = ["Lock in your guess. Three seconds!", "Where are we? Make your guess!", "Final answer? Three seconds!"]
-GENERIC_HINTS = ["Check the road markings.", "Look at the signs and the houses.", "Notice the plants and the sky.",
-                 "Which side of the road do they drive on?"]
+SAY_PAN1 = ["Can you find it?", "This one is tricky.", "Last one!"]
+GENERIC_HINTS = ["Watch the road.", "Look at the signs.", "Check the plants.", "Look at the houses.", "Which side do they drive on?"]
+
+# Round 1 is always a well-known sight (more landscapes than city landmarks).
+# Later rounds: 50 % sights (landscapes, lesser-known landmarks, border points), 50 % normal streets.
+ROUND1_WEIGHTS = {"landscape": 0.6, "landmark": 0.4}
+LATER_SIGHT_WEIGHTS = {"landscape": 0.5, "landmark": 0.25, "border": 0.25}
 
 
 def load_json(p, default):
@@ -30,52 +37,67 @@ def load_json(p, default):
         return default
 
 
-def pick_locations(n, rng, history):
+def available_locations(history):
     locs = load_json(LOCATIONS, [])
     used = set()
     for post in history.get("posted", [])[-60:]:
         used.update(post.get("location_ids", []))
     dead = set(history.get("no_coverage", []))
-    pool = [l for l in locs if l["id"] not in used and l["id"] not in dead] or [l for l in locs if l["id"] not in dead]
-    order = {"easy": 0, "medium": 1, "hard": 2}
-    rng.shuffle(pool)
-    pool.sort(key=lambda l: order.get(l.get("difficulty", "medium"), 1))   # easier rounds first
-    # keep a mix: take candidates from easy->hard buckets, keep spares for missing coverage
-    return pool
+    fresh = [l for l in locs if l["id"] not in used and l["id"] not in dead]
+    return fresh or [l for l in locs if l["id"] not in dead]
+
+
+def weighted_order(rng, locs, weights):
+    """Random order where higher-weighted types tend to come first; types with weight 0 are dropped."""
+    keyed = [(rng.random() ** (1 / weights[l["type"]]), l) for l in locs if weights.get(l.get("type"), 0) > 0]
+    return [l for _, l in sorted(keyed, key=lambda t: -t[0])]
+
+
+def candidates_for(slot, rng, pool):
+    if slot == 0:
+        easy = [l for l in pool if l.get("difficulty") in ("easy", "medium")]
+        first = weighted_order(rng, easy, ROUND1_WEIGHTS)
+        return first + weighted_order(rng, pool, ROUND1_WEIGHTS)          # fallbacks: any difficulty
+    harder = [l for l in pool if l.get("difficulty") in ("medium", "hard")]
+    if rng.random() < 0.5:
+        primary = weighted_order(rng, harder, {"street": 1.0})
+        backup = weighted_order(rng, harder, LATER_SIGHT_WEIGHTS)
+    else:
+        primary = weighted_order(rng, harder, LATER_SIGHT_WEIGHTS)
+        backup = weighted_order(rng, harder, {"street": 1.0})
+    return primary + backup + weighted_order(rng, pool, {"street": 1, "landscape": 1, "landmark": 1, "border": 1})
 
 
 def build_rounds(n, rng, history, demo=False):
-    rounds = []; candidates = pick_locations(n, rng, history)
+    rounds = []; pool = available_locations(history); tried = set()
     if demo:
         from PIL import Image
         demo_panos = sorted(Path(config.ROOT / "demo").glob("*.jpg"))
-    spots = np.linspace(0, len(candidates) - 1, n * 4).astype(int) if candidates else []
-    tried = set()
     for slot in range(n):
-        # choose from the matching difficulty band, fall back to anything left
-        band = [candidates[i] for i in spots[slot * 4:(slot + 1) * 4]] + candidates
-        for loc in band:
+        for loc in candidates_for(slot, rng, pool):
             if loc["id"] in tried: continue
             tried.add(loc["id"])
-            print(f"round {slot + 1}: trying {loc['name']}, {loc['country']} ({loc['difficulty']})")
+            kind = loc.get("type", "street")
+            print(f"round {slot + 1}: trying {loc['name']}, {loc['country']} ({kind}, {loc['difficulty']})")
             if demo:
                 pano = np.array(Image.open(demo_panos[slot % len(demo_panos)]).convert("RGB"))[:, ::-1].copy()
                 meta = dict(id="demo", creator="demo", lon=loc["lon"], lat=loc["lat"], url="")
             else:
                 from .mapillary import fetch_panorama, NoPanorama
                 try:
-                    pano, meta = fetch_panorama(loc["lon"], loc["lat"], rng)
+                    pano, meta = fetch_panorama(loc["lon"], loc["lat"], rng, kind=kind)
                 except NoPanorama as e:
                     print(f"  {e}"); history.setdefault("no_coverage", []).append(loc["id"]); continue
-            place = f"{loc['name']}, {loc['country']}"
-            hint = loc.get("hint") or rng.choice(GENERIC_HINTS)
-            reveal = (f"It's {loc.get('say', place)}! Was your guess close?" if slot % 2 == 0
-                      else f"This was {loc.get('say', place)}. Did you get it?")
+            fact = (loc.get("fact") or "").strip()
+            reveal = f"It's {loc.get('say') or loc['name']}!"
+            if fact: reveal += f" {fact}"
+            if slot == 0: reveal += " Did you get it right?"
             rounds.append(dict(
-                pano=pano, lonlat=(meta["lon"], meta["lat"]), place=place, loc_id=loc["id"],
-                intro=INTROS[2] if (n >= 3 and slot == n - 1) else INTROS[min(slot, 1)],
-                lines=dict(intro=SAY_INTRO[min(slot, 2)], pan1=SAY_PAN1[min(slot, 2)], pan2=hint,
-                           guess=SAY_GUESS[min(slot, 2)], reveal=reveal),
+                pano=pano, lonlat=(loc["lon"], loc["lat"]) if kind != "street" else (meta["lon"], meta["lat"]),
+                place=loc["name"] if loc["country"] in loc["name"] else f"{loc['name']}, {loc['country']}",
+                fact=fact, loc_id=loc["id"], intro=intro_for(slot, n),
+                lines=dict(intro=SAY_INTRO[min(slot, 2)], pan1=SAY_PAN1[min(slot, 2)],
+                           pan2=loc.get("hint") or rng.choice(GENERIC_HINTS), reveal=reveal),
                 credit=f"Imagery: Mapillary{' / @' + meta['creator'] if meta.get('creator') else ''} · CC BY-SA 4.0",
                 meta=meta))
             break

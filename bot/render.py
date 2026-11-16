@@ -16,17 +16,18 @@ INTRO = 1.0
 T_PAN0, T_PAN1 = 1.0, 6.0
 T_SLIDE1 = 6.5
 T_GUESS0, T_GUESS1 = 6.5, 9.5
-T_ZOOM0, T_ZOOM1 = 9.4, 10.4
-T_PIN, T_CIRCLE, T_CARD = 10.0, 10.25, 10.4
-RD = 13.4
+T_PIN, T_CIRCLE, T_CARD = 9.7, 9.95, 10.4
+T_CHIME = T_CARD                       # chime ~0.9 s, the reveal line starts after it
+RD = 15.5
 END = 6.0
 PAN_SECONDS = T_PAN1 - T_PAN0
 GUESS_SECONDS = T_GUESS1 - T_GUESS0
 
 # voice slots: key -> (start, max_len, caption position)
-SLOTS = {"intro": (0.05, 0.95, None), "pan1": (1.1, 2.5, "low"), "pan2": (3.7, 2.2, "low"),
-         "guess": (6.6, 2.8, "top"), "reveal": (10.45, 2.85, "top")}
-END_SLOTS = {"end1": (0.3, 2.8, "mid"), "end2": (3.3, 2.6, "mid")}
+# voice slots: start, max length, caption position. Chosen so no sound effect plays while he speaks.
+SLOTS = {"intro": (0.25, 0.62, None), "pan1": (1.6, 2.0, "low"), "pan2": (3.95, 1.85, "low"),
+         "guess": (6.6, 2.8, "top"), "reveal": (11.42, 3.95, "top")}
+END_SLOTS = {"end1": (1.15, 2.6, "mid")}
 
 PX, PY, PS = 60, 470, 960
 SR = 44100
@@ -135,8 +136,7 @@ class Reel:
             R["bg"] = None
         self.clips = []          # (abs_start, samples)
         self.caps = []           # (abs_t0, abs_t1, text, pos)
-        self.end_lines = {"end1": "How many did you get right?",
-                          "end2": "Comment your score and follow for a new round every day!"}
+        self.end_lines = {"end1": "How many did you get?"}
         self._make_voice()
 
     # ---- voice + caption timeline
@@ -240,11 +240,7 @@ class Reel:
         else:
             out = self._bg(R).copy()
         wm = self.world; lat = R["lonlat"][1]
-        z = ease_io((t - T_ZOOM0) / (T_ZOOM1 - T_ZOOM0))
-        vw0 = float(wm.W); vw1 = 5200 / wm.km_per_px(lat)
-        vw = math.exp(math.log(vw0) + (math.log(vw1) - math.log(vw0)) * z)
-        c0 = np.array([wm.W / 2, wm.H / 2]); ctr = c0 + (R["Ti"] - c0) * min(1, z * 1.6)
-        pim, to_p, s = self.map_panel(ctr, vw, lat)
+        pim, to_p, s = self.map_panel(np.array([wm.W / 2, wm.H / 2]), float(wm.W), lat)   # always the whole world
         pd = ImageDraw.Draw(pim); tx, ty = to_p(R["Ti"]); red = (235, 52, 72)
         if t >= T_CIRCLE:
             k = ease_out((t - T_CIRCLE) / 0.6); rr = RADIUS_KM / wm.km_per_px(lat) * s * k
@@ -269,8 +265,10 @@ class Reel:
                 f1 = font(True, size); d.text((W / 2 - d.textlength(R["place"], font=f1) / 2, 1555 + (66 - size) / 2),
                                               R["place"], font=f1, fill=(15, 18, 28))
                 lo, la = R["lonlat"]
-                co = f"{abs(la):.2f}°{'N' if la >= 0 else 'S'}, {abs(lo):.2f}°{'E' if lo >= 0 else 'W'}"
-                f2 = font(False, 32); d.text((W / 2 - d.textlength(co, font=f2) / 2, 1650), co, font=f2, fill=(110, 112, 122))
+                sub = R.get("fact") or f"{abs(la):.2f}°{'N' if la >= 0 else 'S'}, {abs(lo):.2f}°{'E' if lo >= 0 else 'W'}"
+                fs = 32
+                while d.textlength(sub, font=font(False, fs)) > 840 and fs > 20: fs -= 1
+                f2 = font(False, fs); d.text((W / 2 - d.textlength(sub, font=f2) / 2, 1652), sub, font=f2, fill=(110, 112, 122))
         self._captions(d, abs_t); round_label(d, ri + 1, n)
         out.alpha_composite(ov); return out.convert("RGB")
 
@@ -313,20 +311,26 @@ class Reel:
                 x = tt(0.6); s = 0.22 * np.sin(2 * np.pi * f * x) * np.exp(-x * 5)
                 i = int(k * 0.1 * SR); out[i:i + len(s)] += s
             return out
+        speech = [(t0, t0 + len(c) / SR) for t0, c in self.clips]
+        def free(t0, dur):                    # True if no voice is speaking in [t0, t0+dur]
+            return all(t0 + dur < s0 - 0.08 or t0 > s1 + 0.08 for s0, s1 in speech)
+        def sfx(t0, sig, gain=1.0):
+            if free(t0, len(sig) / SR): add(t0, sig, gain)
+            else:
+                self.skipped_sfx = getattr(self, "skipped_sfx", 0) + 1
+                self.skipped_at = getattr(self, "skipped_at", []) + [round(t0, 2)]
         for r in range(len(self.rounds)):
             b = r * RD
-            add(b, pop()); add(b + T_PAN0 - 0.05, whoosh())
-            for k in range(int(PAN_SECONDS)): add(b + T_PAN0 + k, tick(k >= PAN_SECONDS - 2), 0.8)
-            add(b + T_PAN1, whoosh())
-            for k in range(int(GUESS_SECONDS)): add(b + T_GUESS0 + k, tick(k >= GUESS_SECONDS - 1), 0.8)
-            add(b + T_PIN + 0.2, pop()); add(b + T_CARD, chime())
-        add(RD * len(self.rounds) + 0.15, chime())
-        # voice on top, light ducking of effects under speech
+            sfx(b, pop()); sfx(b + T_PAN0, whoosh())
+            for k in range(int(PAN_SECONDS)): sfx(b + T_PAN0 + k, tick(k >= PAN_SECONDS - 2), 0.8)
+            sfx(b + T_PAN1, whoosh())
+            for k in range(int(GUESS_SECONDS)): sfx(b + T_GUESS0 + k, tick(k >= GUESS_SECONDS - 1), 0.8)
+            sfx(b + T_PIN + 0.2, pop()); sfx(b + T_CHIME, chime())
+        sfx(RD * len(self.rounds) + 0.15, chime())
         voice = np.zeros(N, np.float32)
         for t0, clip in self.clips:
             i = int(t0 * SR); j = min(N, i + len(clip)); voice[i:j] += clip[: j - i]
-        env = np.convolve(np.abs(voice), np.ones(2205) / 2205, "same")
-        a = a * (1 - 0.5 * np.clip(env * 8, 0, 1)) + voice * 1.1
+        a = a + voice * 1.1
         a = np.clip(a, -1, 1)
         with wave.open(str(path), "wb") as w:
             w.setnchannels(1); w.setsampwidth(2); w.setframerate(SR)
@@ -334,6 +338,7 @@ class Reel:
 
     def render(self, out_mp4, workdir):
         wav = f"{workdir}/audio.wav"; self.audio(wav)
+        print(f"  voice lines: {len(self.clips)}, sound effects muted under speech: {getattr(self, 'skipped_sfx', 0)}")
         p = subprocess.Popen(["ffmpeg", "-y", "-loglevel", "error", "-f", "rawvideo", "-pix_fmt", "rgb24",
                               "-s", f"{W}x{H}", "-r", str(FPS), "-i", "-", "-i", wav,
                               "-c:v", "libx264", "-preset", "veryfast", "-crf", "20", "-pix_fmt", "yuv420p",

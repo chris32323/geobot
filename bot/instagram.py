@@ -18,9 +18,18 @@ def _check(r):
     return j
 
 
+def api_for(token):
+    """Instagram-Login tokens (IG...) use graph.instagram.com, Facebook-Login tokens (EAA...) use graph.facebook.com."""
+    if token.startswith("EAA"):
+        return IG_API.replace("graph.instagram.com", "graph.facebook.com")
+    return IG_API
+
+
 def publish_reel(video_url, caption, user_id=IG_USER_ID, token=IG_ACCESS_TOKEN, max_wait_s=900):
     if not (user_id and token):
         raise IGError("IG_USER_ID / IG_ACCESS_TOKEN not set")
+    print(f"  token type: {'Facebook login (EAA...)' if token.startswith('EAA') else 'Instagram login (' + token[:4] + '...)'}, length {len(token)}")
+    IG_API = api_for(token)
     print("  creating reel container ...")
     j = _check(requests.post(f"{IG_API}/{user_id}/media", data=dict(
         media_type="REELS", video_url=video_url, caption=caption, share_to_feed="true", access_token=token), timeout=120))
@@ -57,3 +66,4 @@ def refresh_token(token=IG_ACCESS_TOKEN):
     j = _check(requests.get("https://graph.instagram.com/refresh_access_token",
                             params=dict(grant_type="ig_refresh_token", access_token=token), timeout=60))
     return j["access_token"], j.get("expires_in")
+

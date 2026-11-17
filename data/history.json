@@ -51,6 +51,19 @@
         "Petronas Towers, Kuala Lumpur, Malaysia",
         "CN Tower, Toronto, Canada"
       ]
+    },
+    {
+      "date": "2026-11-17T07:38:58+00:00",
+      "media_id": "18118783361105282",
+      "permalink": "https://www.instagram.com/reel/Df1afCkjZJO/",
+      "location_ids": [
+        "grossglockner-at",
+        "montstmichel-fr"
+      ],
+      "places": [
+        "Grossglockner High Alpine Road, Austria",
+        "Mont-Saint-Michel, France"
+      ]
     }
   ],
   "no_coverage": [
@@ -83,6 +96,8 @@
     "taipei-tw",
     "edinburgh-uk",
     "bruges-be",
-    "pukaki-nz"
+    "pukaki-nz",
+    "glencoe-uk",
+    "monumentvalley-us"
   ]
 }

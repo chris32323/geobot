@@ -25,6 +25,19 @@
         "Charles Bridge, Prague, Czechia",
         "Seville, Spain"
       ]
+    },
+    {
+      "date": "2026-11-17T00:01:59+00:00",
+      "media_id": "17997059955068007",
+      "permalink": "https://www.instagram.com/reel/Df0mNg_jyLn/",
+      "location_ids": [
+        "hagiasophia-tr",
+        "atomium-be"
+      ],
+      "places": [
+        "Hagia Sophia, Istanbul, Türkiye",
+        "Atomium, Brussels, Belgium"
+      ]
     }
   ],
   "no_coverage": [
@@ -56,6 +69,7 @@
     "tallinn-ee",
     "taipei-tw",
     "edinburgh-uk",
-    "bruges-be"
+    "bruges-be",
+    "pukaki-nz"
   ]
 }

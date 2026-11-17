@@ -4,6 +4,7 @@ import numpy as np
 import requests
 from PIL import Image
 from .config import MAPILLARY_TOKEN, MIN_PANO_WIDTH, REQUIRE_ROAD
+from .level import level_panorama
 
 API = "https://graph.mapillary.com/images"
 FIELDS = "id,thumb_original_url,is_pano,width,height,captured_at,computed_geometry,creator"
@@ -107,24 +108,28 @@ def fetch_panorama(lon, lat, rng=None, kind="street"):
 
 
 def _download(m, lon, lat):
-        try:
-            r = requests.get(m["thumb_original_url"], timeout=120)
-            r.raise_for_status()
-            im = Image.open(io.BytesIO(r.content)).convert("RGB")
-        except Exception as e:
-            print(f"  download failed ({e}), next")
-            return None
-        if im.width > 8192:
-            im = im.resize((8192, 4096), Image.LANCZOS)
-        arr = np.array(im)
-        if arr.std() < 12:                     # blank / broken image
-            return None
-        if REQUIRE_ROAD and not _sky_visible(arr):
-            print(f"  {m['id']}: no open sky at the top (probably indoors), skipped")
-            return None
-        geo = (m.get("computed_geometry") or {}).get("coordinates") or [lon, lat]
-        meta = dict(id=m["id"], lon=geo[0], lat=geo[1], captured_at=m.get("captured_at"),
-                    creator=(m.get("creator") or {}).get("username"),
-                    url=f"https://www.mapillary.com/app/?pKey={m['id']}")
-        print(f"  using panorama {m['id']}")
-        return arr, meta
+    try:
+        r = requests.get(m["thumb_original_url"], timeout=120)
+        r.raise_for_status()
+        im = Image.open(io.BytesIO(r.content)).convert("RGB")
+    except Exception as e:
+        print(f"  download failed ({e}), next")
+        return None
+    if im.width > 8192:
+        im = im.resize((8192, 4096), Image.LANCZOS)
+    arr = np.array(im)
+    if arr.std() < 12:                     # blank / broken image
+        return None
+    if REQUIRE_ROAD and not _sky_visible(arr):
+        print(f"  {m['id']}: no open sky at the top (probably indoors), skipped")
+        return None
+    arr, lv = level_panorama(arr)          # straighten a crooked camera, or skip if far too tilted
+    print(f"  {m['id']}: horizon check {lv}")
+    if arr is None:
+        return None
+    geo = (m.get("computed_geometry") or {}).get("coordinates") or [lon, lat]
+    meta = dict(id=m["id"], lon=geo[0], lat=geo[1], captured_at=m.get("captured_at"),
+                creator=(m.get("creator") or {}).get("username"),
+                url=f"https://www.mapillary.com/app/?pKey={m['id']}", level=lv)
+    print(f"  using panorama {m['id']}")
+    return arr, meta

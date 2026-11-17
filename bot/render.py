@@ -18,16 +18,16 @@ T_SLIDE1 = 6.5
 T_GUESS0, T_GUESS1 = 6.5, 9.5
 T_PIN, T_CIRCLE, T_CARD = 9.7, 9.95, 10.4
 T_CHIME = T_CARD                       # chime ~0.9 s, the reveal line starts after it
-RD = 15.5
+RD = 17.4
 END = 6.0
 PAN_SECONDS = T_PAN1 - T_PAN0
 GUESS_SECONDS = T_GUESS1 - T_GUESS0
 
 # voice slots: key -> (start, max_len, caption position)
 # voice slots: start, max length, caption position. Chosen so no sound effect plays while he speaks.
-SLOTS = {"intro": (0.25, 0.62, None), "pan1": (1.6, 2.0, "low"), "pan2": (3.95, 1.85, "low"),
-         "guess": (6.6, 2.8, "top"), "reveal": (11.42, 3.95, "top")}
-END_SLOTS = {"end1": (1.15, 2.6, "mid")}
+SLOTS = {"intro": (0.25, 0.62, None), "pan1": (1.75, 2.2, "low"), "pan2": (3.95, 1.85, "low"),
+         "guess": (6.6, 2.8, "top"), "reveal": (11.42, 5.8, "top")}
+END_SLOTS = {"end1": (1.15, 3.0, "mid")}
 
 PX, PY, PS = 60, 470, 960
 SR = 44100
@@ -159,8 +159,7 @@ class Reel:
             self._add_line(b + slot[0], slot, self.end_lines[key])
 
     def _captions(self, d, abs_t):
-        for t0, t1, text, pos in self.caps:
-            caption(d, text, pos, abs_t, t0, t1)
+        return                                   # no subtitle boxes: the voice speaks, the screen stays clean
 
     # ---- map panel
     def map_panel(self, center, vw, lat_c):
@@ -229,7 +228,6 @@ class Reel:
             out = Image.fromarray(view(R["pano"], yaw, pitch)).convert("RGBA")
             timer(d, W / 2, 270, PAN_SECONDS - (t - T_PAN0), PAN_SECONDS, (t - T_PAN0) % 1)
             pill(d, (W / 2, 1760), "360°  ·  look around", font(False, 32), fill=(255, 255, 255, 60))
-            d.text((24, 1870), R["credit"], font=font(False, 22), fill=(255, 255, 255, 170))
             self._captions(d, abs_t); round_label(d, ri + 1, n)
             out.alpha_composite(ov); return out.convert("RGB")
         # ---- map phase

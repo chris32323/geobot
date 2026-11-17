@@ -21,7 +21,7 @@ def intro_for(slot, n):
     return (f"ROUND {slot + 1}", "STILL IN?", "It gets harder now")
 
 SAY_INTRO = ["Where are we?", "Still in?", "Final round!"]
-SAY_PAN1 = ["Can you find it?", "This one is tricky.", "Last one!"]
+SAY_PAN1 = ["Can you find it?", "This one is tricky.", "Last one!"]   # no location hints
 GENERIC_HINTS = ["Watch the road.", "Look at the signs.", "Check the plants.", "Look at the houses.", "Which side do they drive on?"]
 
 # Round 1 is always a well-known sight (more landscapes than city landmarks).
@@ -89,15 +89,13 @@ def build_rounds(n, rng, history, demo=False):
                 except NoPanorama as e:
                     print(f"  {e}"); history.setdefault("no_coverage", []).append(loc["id"]); continue
             fact = (loc.get("fact") or "").strip()
-            reveal = f"It's {loc.get('say') or loc['name']}!"
-            if fact: reveal += f" {fact}"
+            reveal = loc.get("reveal") or f"This is {loc.get('say') or loc['name']}."
             if slot == 0: reveal += " Did you get it right?"
             rounds.append(dict(
                 pano=pano, lonlat=(loc["lon"], loc["lat"]) if kind != "street" else (meta["lon"], meta["lat"]),
                 place=loc["name"] if loc["country"] in loc["name"] else f"{loc['name']}, {loc['country']}",
                 fact=fact, loc_id=loc["id"], intro=intro_for(slot, n),
-                lines=dict(intro=SAY_INTRO[min(slot, 2)], pan1=SAY_PAN1[min(slot, 2)],
-                           pan2=loc.get("hint") or rng.choice(GENERIC_HINTS), reveal=reveal),
+                lines=dict(intro=SAY_INTRO[min(slot, 2)], pan1=SAY_PAN1[min(slot, 2)], reveal=reveal),
                 credit=f"Imagery: Mapillary{' / @' + meta['creator'] if meta.get('creator') else ''} · CC BY-SA 4.0",
                 meta=meta))
             break
@@ -115,7 +113,11 @@ def make_caption(rounds):
             f"CC BY-SA 4.0. {links}\nMap data: Natural Earth.\n\n{config.HASHTAGS}")
 
 
+BOT_VERSION = "2026-11-17c (no hints, short reveal, slow voice, auto-level)"
+
+
 def cmd_render(args):
+    print(f"geobot version {BOT_VERSION}")
     out = Path(args.out); out.mkdir(parents=True, exist_ok=True)
     seed = args.seed if args.seed is not None else int(dt.datetime.now(dt.timezone.utc).strftime("%Y%m%d"))
     rng = random.Random(seed)

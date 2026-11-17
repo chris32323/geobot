@@ -1,9 +1,9 @@
 """AI voice-over (male). Default: Piper (free, runs offline on the GitHub runner). Optional: OpenAI TTS."""
-import os, subprocess, wave
+import os, re, subprocess, wave
 from pathlib import Path
 import numpy as np
 import requests
-from .config import TTS_ENGINE, PIPER_VOICE, MODELS, OPENAI_VOICE, OPENAI_TTS_MODEL, VOICE_PITCH
+from .config import TTS_ENGINE, PIPER_VOICE, MODELS, OPENAI_VOICE, OPENAI_TTS_MODEL, VOICE_PITCH, VOICE_SPEED, VOICE_EXPRESSION, VOICE_PAUSE
 
 SR = 44100
 
@@ -44,11 +44,15 @@ class Voice:
             if hasattr(v, "synthesize_wav"):                  # piper-tts >= 1.3
                 try:
                     from piper import SynthesisConfig
-                    v.synthesize_wav(text, wf, syn_config=SynthesisConfig(length_scale=0.9))
-                except ImportError:
+                    cfg = SynthesisConfig(length_scale=VOICE_SPEED, noise_scale=VOICE_EXPRESSION)
+                except (ImportError, TypeError):
+                    cfg = None
+                if cfg is not None:
+                    v.synthesize_wav(text, wf, syn_config=cfg)
+                else:
                     v.synthesize_wav(text, wf)
             else:                                              # piper-tts 1.2.x
-                v.synthesize(text, wf, length_scale=0.9)
+                v.synthesize(text, wf, length_scale=VOICE_SPEED, noise_scale=VOICE_EXPRESSION)
 
     def _openai_wav(self, text, path):
         r = requests.post("https://api.openai.com/v1/audio/speech",
@@ -59,8 +63,7 @@ class Voice:
         r.raise_for_status()
         Path(path).write_bytes(r.content)
 
-    def say(self, text, max_len=None):
-        """Synthesize one line. Returns mono float32 array at 44.1 kHz (sped up slightly if it must fit max_len)."""
+    def _one(self, text):
         self.n += 1
         raw = self.dir / f"line{self.n:02d}.wav"
         if self.engine == "openai":
@@ -68,6 +71,15 @@ class Voice:
         else:
             self._piper_wav(text, raw)
         a = _wav_to_array(raw, pitch=VOICE_PITCH)
-        if max_len and len(a) / SR > max_len:
-            a = _wav_to_array(raw, tempo=min(len(a) / SR / max_len, 1.35), pitch=VOICE_PITCH)
-        return a
+        nz = np.flatnonzero(np.abs(a) > 0.01)                # trim leading/trailing silence
+        return a[max(nz[0] - 800, 0): nz[-1] + 1600] if len(nz) else a
+
+    def say(self, text, max_len=None):
+        """Speak a line calmly: each sentence separately, with a short pause in between. Never sped up."""
+        parts = [p for p in re.split(r"(?<=[.!?])\s+", text.strip()) if p]
+        gap = np.zeros(int(VOICE_PAUSE * SR), np.float32)
+        out = []
+        for i, p in enumerate(parts):
+            if i: out.append(gap)
+            out.append(self._one(p))
+        return np.concatenate(out) if out else np.zeros(1, np.float32)

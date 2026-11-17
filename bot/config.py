@@ -24,7 +24,10 @@ PIPER_VOICE = os.getenv("PIPER_VOICE", "en_US-ryan-high")   # male US voice
 OPENAI_VOICE = os.getenv("OPENAI_VOICE", "onyx")            # male voice
 OPENAI_TTS_MODEL = os.getenv("OPENAI_TTS_MODEL", "gpt-4o-mini-tts")
 REQUIRE_VOICE = os.getenv("REQUIRE_VOICE", "1") == "1"
-VOICE_PITCH = float(os.getenv("VOICE_PITCH", "0.88"))      # < 1 = deeper voice (0.80 very deep, 1.0 original)
+VOICE_PITCH = float(os.getenv("VOICE_PITCH", "1.0"))       # 1.0 = original Ryan; < 1 = deeper
+VOICE_SPEED = float(os.getenv("VOICE_SPEED", "1.4"))       # Piper length scale: 1.0 = fast default, 1.4 = slow and clear
+VOICE_EXPRESSION = float(os.getenv("VOICE_EXPRESSION", "0.75"))  # Piper noise scale: higher = livelier intonation (0.667 default)
+VOICE_PAUSE = float(os.getenv("VOICE_PAUSE", "0.6"))        # seconds of silence between sentences
 
 # ---- Mapillary
 MAPILLARY_TOKEN = os.getenv("MAPILLARY_TOKEN", "")

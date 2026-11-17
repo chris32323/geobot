@@ -181,6 +181,19 @@
         "Colosseum, Rome, Italy",
         "Dreiländereck, Basel, Switzerland / Germany / France"
       ]
+    },
+    {
+      "date": "2026-11-17T16:03:11+00:00",
+      "media_id": "18139581043649344",
+      "permalink": "https://www.instagram.com/reel/Df2UMRplcS6/",
+      "location_ids": [
+        "tajmahal-in",
+        "transfagarasan-ro"
+      ],
+      "places": [
+        "Taj Mahal, Agra, India",
+        "Transfăgărășan, Romania"
+      ]
     }
   ],
   "no_coverage": [
@@ -237,6 +250,7 @@
     "klevan-ua",
     "deathvalley-us",
     "plitvice-hr",
-    "synevyr-ua"
+    "synevyr-ua",
+    "brandenburg-de"
   ]
 }

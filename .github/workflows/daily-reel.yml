@@ -54,7 +54,8 @@ jobs:
           TTS_ENGINE: ${{ vars.TTS_ENGINE || 'piper' }}
           PIPER_VOICE: ${{ vars.PIPER_VOICE || 'en_US-ryan-high' }}
           ROUNDS_PER_REEL: ${{ vars.ROUNDS_PER_REEL || '2' }}
-          VOICE_PITCH: ${{ vars.VOICE_PITCH || '0.88' }}
+          VOICE_PITCH: ${{ vars.VOICE_PITCH || '1.0' }}
+          VOICE_SPEED: ${{ vars.VOICE_SPEED || '1.4' }}
           REQUIRE_ROAD: ${{ vars.REQUIRE_ROAD || '1' }}
           RADIUS_KM: ${{ vars.RADIUS_KM || '2000' }}
           TITLE_EDITION: ${{ vars.TITLE_EDITION || 'World Edition' }}

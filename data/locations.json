@@ -8,8 +8,8 @@
   "lat": 48.8584,
   "lon": 2.2945,
   "say": "the Eiffel Tower in Paris",
-  "hint": "Look up!",
-  "fact": "It was built for the 1889 World's Fair."
+  "fact": "Built for the 1889 World's Fair.",
+  "reveal": "The Eiffel Tower, built in 1889."
  },
  {
   "id": "colosseum-it",
@@ -20,8 +20,8 @@
   "lat": 41.8902,
   "lon": 12.4922,
   "say": "the Colosseum in Rome",
-  "hint": "Look at the old walls.",
-  "fact": "It's almost 2000 years old."
+  "fact": "Almost 2000 years old.",
+  "reveal": "Rome's Colosseum, almost two thousand years old."
  },
  {
   "id": "brandenburg-de",
@@ -32,8 +32,8 @@
   "lat": 52.5163,
   "lon": 13.3777,
   "say": "the Brandenburg Gate in Berlin",
-  "hint": "Look at the columns.",
-  "fact": "The Berlin Wall ran right next to it."
+  "fact": "The Berlin Wall stood right here.",
+  "reveal": "Berlin's Brandenburg Gate, where the Wall stood."
  },
  {
   "id": "olympiapark-de",
@@ -44,8 +44,8 @@
   "lat": 48.1731,
   "lon": 11.5466,
   "say": "the Olympic Park in Munich",
-  "hint": "Look at that tower.",
-  "fact": "Home of the 1972 Olympics."
+  "fact": "Home of the 1972 Olympics.",
+  "reveal": "Munich's Olympic Park, home of 1972."
  },
  {
   "id": "sagrada-es",
@@ -56,8 +56,8 @@
   "lat": 41.4036,
   "lon": 2.1744,
   "say": "the Sagrada Família in Barcelona",
-  "hint": "Look up!",
-  "fact": "It's been under construction since 1882."
+  "fact": "Under construction since 1882.",
+  "reveal": "Barcelona's Sagrada Família, unfinished since 1882."
  },
  {
   "id": "towerbridge-uk",
@@ -68,8 +68,8 @@
   "lat": 51.5055,
   "lon": -0.0754,
   "say": "Tower Bridge in London",
-  "hint": "Which side do they drive on?",
-  "fact": "It opened in 1894."
+  "fact": "Opened in 1894.",
+  "reveal": "London's Tower Bridge, opened in 1894."
  },
  {
   "id": "atomium-be",
@@ -80,8 +80,8 @@
   "lat": 50.8949,
   "lon": 4.3415,
   "say": "the Atomium in Brussels",
-  "hint": "Look at those spheres.",
-  "fact": "It was built for the 1958 World Expo."
+  "fact": "Built for the 1958 World Expo.",
+  "reveal": "The Atomium in Brussels, from 1958."
  },
  {
   "id": "pisa-it",
@@ -92,8 +92,8 @@
   "lat": 43.723,
   "lon": 10.3966,
   "say": "the Leaning Tower of Pisa",
-  "hint": "Something looks off.",
-  "fact": "It started leaning while it was being built."
+  "fact": "It started leaning during construction.",
+  "reveal": "The Leaning Tower of Pisa."
  },
  {
   "id": "neuschwanstein-de",
@@ -104,8 +104,8 @@
   "lat": 47.5576,
   "lon": 10.7498,
   "say": "Neuschwanstein Castle in Bavaria",
-  "hint": "Check the mountains.",
-  "fact": "King Ludwig the Second built it in the 1800s."
+  "fact": "Built by King Ludwig the Second.",
+  "reveal": "Neuschwanstein, King Ludwig's fairytale castle."
  },
  {
   "id": "montstmichel-fr",
@@ -116,8 +116,8 @@
   "lat": 48.6361,
   "lon": -1.5115,
   "say": "Mont-Saint-Michel in France",
-  "hint": "Look at the water.",
-  "fact": "At high tide, it becomes an island."
+  "fact": "An island at high tide.",
+  "reveal": "Mont-Saint-Michel, an island at high tide."
  },
  {
   "id": "stonehenge-uk",
@@ -128,8 +128,8 @@
   "lat": 51.1789,
   "lon": -1.8262,
   "say": "Stonehenge in England",
-  "hint": "Look at the stones.",
-  "fact": "It's around 5000 years old."
+  "fact": "About 5000 years old.",
+  "reveal": "Stonehenge, about five thousand years old."
  },
  {
   "id": "charlesbridge-cz",
@@ -140,8 +140,8 @@
   "lat": 50.0865,
   "lon": 14.4114,
   "say": "the Charles Bridge in Prague",
-  "hint": "Look at the statues.",
-  "fact": "Construction started in 1357."
+  "fact": "Construction started in 1357.",
+  "reveal": "Prague's Charles Bridge, built in 1357."
  },
  {
   "id": "hagiasophia-tr",
@@ -152,8 +152,8 @@
   "lat": 41.0086,
   "lon": 28.9802,
   "say": "Hagia Sophia in Istanbul",
-  "hint": "Look at the domes.",
-  "fact": "It's almost 1500 years old."
+  "fact": "Almost 1500 years old.",
+  "reveal": "Istanbul's Hagia Sophia, fifteen centuries old."
  },
  {
   "id": "goldengate-us",
@@ -164,8 +164,8 @@
   "lat": 37.8078,
   "lon": -122.475,
   "say": "the Golden Gate Bridge in San Francisco",
-  "hint": "Look at that bridge.",
-  "fact": "It opened in 1937."
+  "fact": "Opened in 1937.",
+  "reveal": "The Golden Gate Bridge, opened in 1937."
  },
  {
   "id": "timessquare-us",
@@ -176,8 +176,8 @@
   "lat": 40.758,
   "lon": -73.9855,
   "say": "Times Square in New York",
-  "hint": "Look at the screens.",
-  "fact": "It's named after The New York Times."
+  "fact": "Named after The New York Times.",
+  "reveal": "Times Square in New York City."
  },
  {
   "id": "spaceneedle-us",
@@ -188,8 +188,8 @@
   "lat": 47.6205,
   "lon": -122.3493,
   "say": "the Space Needle in Seattle",
-  "hint": "Look up!",
-  "fact": "It was built for the 1962 World's Fair."
+  "fact": "Built for the 1962 World's Fair.",
+  "reveal": "Seattle's Space Needle, built in 1962."
  },
  {
   "id": "cntower-ca",
@@ -200,8 +200,8 @@
   "lat": 43.6426,
   "lon": -79.3871,
   "say": "the CN Tower in Toronto",
-  "hint": "Look up!",
-  "fact": "It's over 550 meters tall."
+  "fact": "Over 550 meters tall.",
+  "reveal": "Toronto's CN Tower, over 550 meters tall."
  },
  {
   "id": "operahouse-au",
@@ -212,8 +212,8 @@
   "lat": -33.8568,
   "lon": 151.2153,
   "say": "the Sydney Opera House",
-  "hint": "Which side do they drive on?",
-  "fact": "It opened in 1973."
+  "fact": "Opened in 1973.",
+  "reveal": "The Sydney Opera House, opened in 1973."
  },
  {
   "id": "shibuya-jp",
@@ -224,8 +224,8 @@
   "lat": 35.6595,
   "lon": 139.7005,
   "say": "Shibuya Crossing in Tokyo",
-  "hint": "Read the signs.",
-  "fact": "One of the busiest crossings in the world."
+  "fact": "One of the world's busiest crossings.",
+  "reveal": "Tokyo's Shibuya Crossing, the world's busiest."
  },
  {
   "id": "burjkhalifa-ae",
@@ -236,8 +236,8 @@
   "lat": 25.1972,
   "lon": 55.2744,
   "say": "the Burj Khalifa in Dubai",
-  "hint": "Look up!",
-  "fact": "It's the tallest building in the world."
+  "fact": "The tallest building in the world.",
+  "reveal": "Dubai's Burj Khalifa, the world's tallest building."
  },
  {
   "id": "christ-br",
@@ -248,8 +248,8 @@
   "lat": -22.9519,
   "lon": -43.2105,
   "say": "Christ the Redeemer in Rio de Janeiro",
-  "hint": "Look at the hills.",
-  "fact": "The statue is 30 meters tall."
+  "fact": "The statue is 30 meters tall.",
+  "reveal": "Christ the Redeemer in Rio."
  },
  {
   "id": "petronas-my",
@@ -260,8 +260,8 @@
   "lat": 3.1579,
   "lon": 101.7116,
   "say": "the Petronas Towers in Kuala Lumpur",
-  "hint": "Look up!",
-  "fact": "The tallest twin towers in the world."
+  "fact": "The tallest twin towers on Earth.",
+  "reveal": "The Petronas Towers in Kuala Lumpur."
  },
  {
   "id": "tajmahal-in",
@@ -272,8 +272,8 @@
   "lat": 27.1751,
   "lon": 78.0421,
   "say": "the Taj Mahal in India",
-  "hint": "Look at the white marble.",
-  "fact": "It was built as a tomb."
+  "fact": "Built as a tomb.",
+  "reveal": "The Taj Mahal, built as a tomb."
  },
  {
   "id": "grossglockner-at",
@@ -283,9 +283,9 @@
   "difficulty": "medium",
   "lat": 47.0742,
   "lon": 12.7495,
-  "say": "the Grossglockner road in Austria",
-  "hint": "Check the mountains.",
-  "fact": "Austria's highest mountain is right here."
+  "say": "the Grossglockner in Austria",
+  "fact": "Austria's highest mountain is right here.",
+  "reveal": "The Grossglockner, Austria's highest mountain."
  },
  {
   "id": "stelvio-it",
@@ -296,8 +296,8 @@
   "lat": 46.5286,
   "lon": 10.4532,
   "say": "the Stelvio Pass in Italy",
-  "hint": "Watch the road.",
-  "fact": "48 hairpin bends on one side."
+  "fact": "48 hairpin bends on one side.",
+  "reveal": "Italy's Stelvio Pass, 48 hairpin bends."
  },
  {
   "id": "furka-ch",
@@ -308,8 +308,8 @@
   "lat": 46.5775,
   "lon": 8.4165,
   "say": "the Furka Pass in Switzerland",
-  "hint": "Watch the road.",
-  "fact": "James Bond drove here in 1964."
+  "fact": "James Bond drove here in 1964.",
+  "reveal": "Switzerland's Furka Pass, a James Bond road."
  },
  {
   "id": "giau-it",
@@ -320,8 +320,8 @@
   "lat": 46.4835,
   "lon": 12.0538,
   "say": "the Dolomites in Italy",
-  "hint": "Check the rocks.",
-  "fact": "The Dolomites are a UNESCO World Heritage Site."
+  "fact": "A UNESCO World Heritage Site.",
+  "reveal": "The Dolomites in northern Italy."
  },
  {
   "id": "lauterbrunnen-ch",
@@ -332,8 +332,8 @@
   "lat": 46.5935,
   "lon": 7.9087,
   "say": "Lauterbrunnen in Switzerland",
-  "hint": "Look at the cliffs.",
-  "fact": "The valley has 72 waterfalls."
+  "fact": "A valley with 72 waterfalls.",
+  "reveal": "Lauterbrunnen, a valley of 72 waterfalls."
  },
  {
   "id": "trollstigen-no",
@@ -344,8 +344,8 @@
   "lat": 62.456,
   "lon": 7.669,
   "say": "Trollstigen in Norway",
-  "hint": "Watch the road.",
-  "fact": "Eleven hairpin bends up a steep mountain."
+  "fact": "Eleven hairpin bends up the mountain.",
+  "reveal": "Norway's Trollstigen, eleven hairpin bends."
  },
  {
   "id": "atlanticroad-no",
@@ -356,8 +356,8 @@
   "lat": 63.0175,
   "lon": 7.354,
   "say": "the Atlantic Ocean Road in Norway",
-  "hint": "Look at the water.",
-  "fact": "A road that hops across the ocean."
+  "fact": "A road that hops across the ocean.",
+  "reveal": "Norway's Atlantic Ocean Road."
  },
  {
   "id": "reine-no",
@@ -368,8 +368,8 @@
   "lat": 67.932,
   "lon": 13.089,
   "say": "Reine in the Lofoten islands",
-  "hint": "Look at the houses.",
-  "fact": "It's above the Arctic Circle."
+  "fact": "Above the Arctic Circle.",
+  "reveal": "Reine, above the Arctic Circle."
  },
  {
   "id": "transfagarasan-ro",
@@ -379,9 +379,9 @@
   "difficulty": "hard",
   "lat": 45.6036,
   "lon": 24.617,
-  "say": "the Transfăgărășan road in Romania",
-  "hint": "Watch the road.",
-  "fact": "It was built in the 1970s across the Carpathians."
+  "say": "the Transfăgărășan in Romania",
+  "fact": "Built in the 1970s.",
+  "reveal": "Romania's Transfăgărășan mountain road."
  },
  {
   "id": "skogafoss-is",
@@ -392,8 +392,8 @@
   "lat": 63.532,
   "lon": -19.5114,
   "say": "Skógafoss in Iceland",
-  "hint": "Where are the trees?",
-  "fact": "This waterfall is 60 meters tall."
+  "fact": "A 60-meter waterfall.",
+  "reveal": "Iceland's Skógafoss, a sixty-meter waterfall."
  },
  {
   "id": "jokulsarlon-is",
@@ -404,8 +404,8 @@
   "lat": 64.0484,
   "lon": -16.1795,
   "say": "Jökulsárlón in Iceland",
-  "hint": "Look at the water.",
-  "fact": "Icebergs float right next to the road."
+  "fact": "Icebergs right next to the road.",
+  "reveal": "Iceland's Jökulsárlón glacier lagoon."
  },
  {
   "id": "glencoe-uk",
@@ -415,9 +415,9 @@
   "difficulty": "hard",
   "lat": 56.669,
   "lon": -5.007,
-  "say": "Glencoe in the Scottish Highlands",
-  "hint": "Which side do they drive on?",
-  "fact": "A James Bond movie was filmed here."
+  "say": "Glencoe in Scotland",
+  "fact": "A James Bond film was shot here.",
+  "reveal": "Glencoe in the Scottish Highlands."
  },
  {
   "id": "moher-ie",
@@ -428,8 +428,8 @@
   "lat": 52.9715,
   "lon": -9.4309,
   "say": "the Cliffs of Moher in Ireland",
-  "hint": "Look at the sea.",
-  "fact": "The cliffs are over 200 meters high."
+  "fact": "Over 200 meters high.",
+  "reveal": "Ireland's Cliffs of Moher."
  },
  {
   "id": "plitvice-hr",
@@ -440,8 +440,8 @@
   "lat": 44.88,
   "lon": 15.616,
   "say": "Plitvice Lakes in Croatia",
-  "hint": "Check the trees.",
-  "fact": "16 lakes connected by waterfalls."
+  "fact": "16 lakes linked by waterfalls.",
+  "reveal": "Croatia's Plitvice Lakes."
  },
  {
   "id": "synevyr-ua",
@@ -451,9 +451,9 @@
   "difficulty": "hard",
   "lat": 48.617,
   "lon": 23.683,
-  "say": "Lake Synevyr in the Ukrainian Carpathians",
-  "hint": "Check the trees.",
-  "fact": "It's called the Pearl of the Carpathians."
+  "say": "Lake Synevyr in Ukraine",
+  "fact": "The Pearl of the Carpathians.",
+  "reveal": "Lake Synevyr in the Ukrainian Carpathians."
  },
  {
   "id": "klevan-ua",
@@ -463,9 +463,9 @@
   "difficulty": "hard",
   "lat": 50.7458,
   "lon": 26.0447,
-  "say": "the Tunnel of Love near Klevan in Ukraine",
-  "hint": "Look at the trees.",
-  "fact": "A green tunnel of trees over a railway."
+  "say": "the Tunnel of Love in Ukraine",
+  "fact": "A tunnel made of trees.",
+  "reveal": "Ukraine's Tunnel of Love, made of trees."
  },
  {
   "id": "merzouga-ma",
@@ -476,8 +476,8 @@
   "lat": 31.099,
   "lon": -4.012,
   "say": "Merzouga in Morocco",
-  "hint": "Look at the sand.",
-  "fact": "This is the edge of the Sahara."
+  "fact": "The edge of the Sahara.",
+  "reveal": "Merzouga, at the edge of the Sahara."
  },
  {
   "id": "monumentvalley-us",
@@ -488,8 +488,8 @@
   "lat": 37.101,
   "lon": -109.99,
   "say": "Monument Valley in the USA",
-  "hint": "Watch the road.",
-  "fact": "A famous movie run ended right here."
+  "fact": "A famous movie run ended here.",
+  "reveal": "Monument Valley in Arizona and Utah."
  },
  {
   "id": "grandcanyon-us",
@@ -500,8 +500,8 @@
   "lat": 36.0617,
   "lon": -112.1077,
   "say": "the Grand Canyon",
-  "hint": "Look down!",
-  "fact": "It's up to 1.8 kilometers deep."
+  "fact": "Up to 1.8 kilometers deep.",
+  "reveal": "The Grand Canyon in Arizona."
  },
  {
   "id": "deathvalley-us",
@@ -512,8 +512,8 @@
   "lat": 36.2297,
   "lon": -116.7676,
   "say": "Death Valley in California",
-  "hint": "Look at the ground.",
-  "fact": "The lowest point in North America."
+  "fact": "The lowest point in North America.",
+  "reveal": "Death Valley, North America's lowest point."
  },
  {
   "id": "bixby-us",
@@ -524,8 +524,8 @@
   "lat": 36.3715,
   "lon": -121.902,
   "say": "Bixby Bridge in California",
-  "hint": "Look at the coast.",
-  "fact": "It was built in 1932."
+  "fact": "Built in 1932.",
+  "reveal": "California's Bixby Bridge, built in 1932."
  },
  {
   "id": "icefields-ca",
@@ -536,8 +536,8 @@
   "lat": 52.219,
   "lon": -117.224,
   "say": "the Icefields Parkway in Canada",
-  "hint": "Check the mountains.",
-  "fact": "Glaciers you can almost touch from the road."
+  "fact": "Glaciers right next to the road.",
+  "reveal": "Canada's Icefields Parkway."
  },
  {
   "id": "uluru-au",
@@ -548,8 +548,8 @@
   "lat": -25.336,
   "lon": 131.036,
   "say": "Uluru in Australia",
-  "hint": "Look at the ground.",
-  "fact": "Uluru is about 350 meters tall."
+  "fact": "About 350 meters tall.",
+  "reveal": "Uluru in the Australian outback."
  },
  {
   "id": "apostles-au",
@@ -559,9 +559,9 @@
   "difficulty": "hard",
   "lat": -38.665,
   "lon": 143.105,
-  "say": "the Great Ocean Road in Australia",
-  "hint": "Look at the sea.",
-  "fact": "Limestone pillars rising out of the ocean."
+  "say": "the Twelve Apostles in Australia",
+  "fact": "Rock pillars in the ocean.",
+  "reveal": "Australia's Twelve Apostles."
  },
  {
   "id": "pukaki-nz",
@@ -572,8 +572,8 @@
   "lat": -44.188,
   "lon": 170.134,
   "say": "Lake Pukaki in New Zealand",
-  "hint": "Look at the water color.",
-  "fact": "Mount Cook, New Zealand's highest mountain, is nearby."
+  "fact": "Near New Zealand's highest mountain.",
+  "reveal": "Lake Pukaki in New Zealand."
  },
  {
   "id": "fuji-jp",
@@ -584,8 +584,8 @@
   "lat": 35.517,
   "lon": 138.752,
   "say": "Mount Fuji in Japan",
-  "hint": "Check the mountains.",
-  "fact": "Mount Fuji is 3776 meters tall."
+  "fact": "3776 meters tall.",
+  "reveal": "Mount Fuji, Japan's highest mountain."
  },
  {
   "id": "tablemountain-za",
@@ -596,8 +596,8 @@
   "lat": -33.918,
   "lon": 18.403,
   "say": "Table Mountain in Cape Town",
-  "hint": "Check the mountains.",
-  "fact": "Clouds often cover it like a tablecloth."
+  "fact": "Often covered by a cloud tablecloth.",
+  "reveal": "Table Mountain in Cape Town."
  },
  {
   "id": "vaals-tripoint",
@@ -607,9 +607,9 @@
   "difficulty": "hard",
   "lat": 50.7546,
   "lon": 6.0207,
-  "say": "the Vaalserberg, where the Netherlands, Belgium and Germany meet",
-  "hint": "Read the signs.",
-  "fact": "Three countries meet at this exact spot."
+  "say": "the Vaalserberg in the Netherlands",
+  "fact": "Three countries meet right here.",
+  "reveal": "Vaals, where three countries meet."
  },
  {
   "id": "basel-tripoint",
@@ -619,9 +619,9 @@
   "difficulty": "hard",
   "lat": 47.59,
   "lon": 7.5896,
-  "say": "Basel, where Switzerland, Germany and France meet",
-  "hint": "Look at the river.",
-  "fact": "Three countries meet in the Rhine here."
+  "say": "Basel in Switzerland",
+  "fact": "Three countries meet in the Rhine.",
+  "reveal": "Basel, where three countries meet."
  },
  {
   "id": "schengen-lu",
@@ -632,8 +632,8 @@
   "lat": 49.4697,
   "lon": 6.3672,
   "say": "Schengen in Luxembourg",
-  "hint": "Look at the river.",
-  "fact": "The Schengen Agreement was signed here in 1985."
+  "fact": "The Schengen Agreement was signed here.",
+  "reveal": "Schengen, birthplace of borderless Europe."
  },
  {
   "id": "baarle-nl",
@@ -643,9 +643,9 @@
   "difficulty": "hard",
   "lat": 51.4409,
   "lon": 4.9289,
-  "say": "Baarle, on the Dutch-Belgian border",
-  "hint": "Look at the ground.",
-  "fact": "The border runs right through houses and cafés."
+  "say": "Baarle in the Netherlands",
+  "fact": "The border runs through houses.",
+  "reveal": "Baarle, where borders cross through houses."
  },
  {
   "id": "fourcorners-us",
@@ -656,8 +656,8 @@
   "lat": 36.999,
   "lon": -109.0452,
   "say": "Four Corners in the USA",
-  "hint": "Look at the ground.",
-  "fact": "The only spot where four US states meet."
+  "fact": "Four US states meet right here.",
+  "reveal": "Four Corners, where four states meet."
  },
  {
   "id": "niagara-ca",
@@ -668,8 +668,8 @@
   "lat": 43.0822,
   "lon": -79.0742,
   "say": "Niagara Falls",
-  "hint": "Listen... water!",
-  "fact": "The US-Canada border runs through the falls."
+  "fact": "The US-Canada border runs through it.",
+  "reveal": "Niagara Falls, on the US-Canada border."
  },
  {
   "id": "kitzbuehel-at",
@@ -680,8 +680,8 @@
   "lat": 47.446,
   "lon": 12.392,
   "say": "Kitzbühel in Austria",
-  "hint": "Watch the road posts.",
-  "fact": ""
+  "fact": "",
+  "reveal": "Kitzbühel, Austria."
  },
  {
   "id": "hallstatt-at",
@@ -692,8 +692,8 @@
   "lat": 47.562,
   "lon": 13.649,
   "say": "Hallstatt in Austria",
-  "hint": "Look at the houses.",
-  "fact": ""
+  "fact": "",
+  "reveal": "Hallstatt, Austria."
  },
  {
   "id": "rothenburg-de",
@@ -704,8 +704,8 @@
   "lat": 49.377,
   "lon": 10.179,
   "say": "Rothenburg in Germany",
-  "hint": "Look at the houses.",
-  "fact": ""
+  "fact": "",
+  "reveal": "Rothenburg ob der Tauber, Germany."
  },
  {
   "id": "amsterdam-nl",
@@ -716,8 +716,8 @@
   "lat": 52.373,
   "lon": 4.893,
   "say": "Amsterdam",
-  "hint": "Look at the bikes.",
-  "fact": ""
+  "fact": "",
+  "reveal": "Amsterdam, Netherlands."
  },
  {
   "id": "bruges-be",
@@ -728,8 +728,8 @@
   "lat": 51.209,
   "lon": 3.225,
   "say": "Bruges in Belgium",
-  "hint": "Look at the houses.",
-  "fact": ""
+  "fact": "",
+  "reveal": "Bruges, Belgium."
  },
  {
   "id": "porto-pt",
@@ -740,8 +740,8 @@
   "lat": 41.141,
   "lon": -8.611,
   "say": "Porto in Portugal",
-  "hint": "Look at the walls.",
-  "fact": ""
+  "fact": "",
+  "reveal": "Porto, Portugal."
  },
  {
   "id": "seville-es",
@@ -752,8 +752,8 @@
   "lat": 37.389,
   "lon": -5.984,
   "say": "Seville in Spain",
-  "hint": "Look at the trees.",
-  "fact": ""
+  "fact": "",
+  "reveal": "Seville, Spain."
  },
  {
   "id": "tuscany-it",
@@ -764,8 +764,8 @@
   "lat": 43.06,
   "lon": 11.61,
   "say": "Tuscany in Italy",
-  "hint": "Check the trees.",
-  "fact": ""
+  "fact": "",
+  "reveal": "Val d'Orcia, Italy."
  },
  {
   "id": "edinburgh-uk",
@@ -776,8 +776,8 @@
   "lat": 55.95,
   "lon": -3.189,
   "say": "Edinburgh in Scotland",
-  "hint": "Which side do they drive on?",
-  "fact": ""
+  "fact": "",
+  "reveal": "Edinburgh, United Kingdom."
  },
  {
   "id": "dublin-ie",
@@ -788,8 +788,8 @@
   "lat": 53.349,
   "lon": -6.26,
   "say": "Dublin in Ireland",
-  "hint": "Read the signs.",
-  "fact": ""
+  "fact": "",
+  "reveal": "Dublin, Ireland."
  },
  {
   "id": "tallinn-ee",
@@ -800,8 +800,8 @@
   "lat": 59.437,
   "lon": 24.745,
   "say": "Tallinn in Estonia",
-  "hint": "Read the signs.",
-  "fact": ""
+  "fact": "",
+  "reveal": "Tallinn, Estonia."
  },
  {
   "id": "helsinki-fi",
@@ -812,8 +812,8 @@
   "lat": 60.17,
   "lon": 24.938,
   "say": "Helsinki in Finland",
-  "hint": "Read the signs.",
-  "fact": ""
+  "fact": "",
+  "reveal": "Helsinki, Finland."
  },
  {
   "id": "reykjavik-is",
@@ -824,8 +824,8 @@
   "lat": 64.146,
   "lon": -21.942,
   "say": "Reykjavík in Iceland",
-  "hint": "Where are the trees?",
-  "fact": ""
+  "fact": "",
+  "reveal": "Reykjavík, Iceland."
  },
  {
   "id": "marrakesh-ma",
@@ -836,8 +836,8 @@
   "lat": 31.629,
   "lon": -7.981,
   "say": "Marrakesh in Morocco",
-  "hint": "Look at the walls.",
-  "fact": ""
+  "fact": "",
+  "reveal": "Marrakesh, Morocco."
  },
  {
   "id": "kyoto-jp",
@@ -848,8 +848,8 @@
   "lat": 35.003,
   "lon": 135.778,
   "say": "Kyoto in Japan",
-  "hint": "Read the signs.",
-  "fact": ""
+  "fact": "",
+  "reveal": "Kyoto, Japan."
  },
  {
   "id": "biei-jp",
@@ -860,8 +860,8 @@
   "lat": 43.588,
   "lon": 142.467,
   "say": "Hokkaido in Japan",
-  "hint": "Which side do they drive on?",
-  "fact": ""
+  "fact": "",
+  "reveal": "Biei, Japan."
  },
  {
   "id": "seoul-kr",
@@ -872,8 +872,8 @@
   "lat": 37.566,
   "lon": 126.978,
   "say": "Seoul in South Korea",
-  "hint": "Read the signs.",
-  "fact": ""
+  "fact": "",
+  "reveal": "Seoul, South Korea."
  },
  {
   "id": "taipei-tw",
@@ -884,8 +884,8 @@
   "lat": 25.033,
   "lon": 121.565,
   "say": "Taipei in Taiwan",
-  "hint": "Look at the scooters.",
-  "fact": ""
+  "fact": "",
+  "reveal": "Taipei, Taiwan."
  },
  {
   "id": "bangkok-th",
@@ -896,8 +896,8 @@
   "lat": 13.756,
   "lon": 100.502,
   "say": "Bangkok in Thailand",
-  "hint": "Read the signs.",
-  "fact": ""
+  "fact": "",
+  "reveal": "Bangkok, Thailand."
  },
  {
   "id": "havana-cu",
@@ -908,8 +908,8 @@
   "lat": 23.136,
   "lon": -82.359,
   "say": "Havana in Cuba",
-  "hint": "Look at the cars.",
-  "fact": ""
+  "fact": "",
+  "reveal": "Havana, Cuba."
  },
  {
   "id": "buenosaires-ar",
@@ -920,8 +920,8 @@
   "lat": -34.604,
   "lon": -58.382,
   "say": "Buenos Aires in Argentina",
-  "hint": "Look at the buildings.",
-  "fact": ""
+  "fact": "",
+  "reveal": "Buenos Aires, Argentina."
  },
  {
   "id": "santiago-cl",
@@ -932,8 +932,8 @@
   "lat": -33.437,
   "lon": -70.65,
   "say": "Santiago in Chile",
-  "hint": "Check the mountains.",
-  "fact": ""
+  "fact": "",
+  "reveal": "Santiago, Chile."
  },
  {
   "id": "cusco-pe",
@@ -944,8 +944,8 @@
   "lat": -13.532,
   "lon": -71.967,
   "say": "Cusco in Peru",
-  "hint": "Look at the walls.",
-  "fact": ""
+  "fact": "",
+  "reveal": "Cusco, Peru."
  },
  {
   "id": "quebec-ca",
@@ -956,8 +956,8 @@
   "lat": 46.813,
   "lon": -71.208,
   "say": "Québec City in Canada",
-  "hint": "Read the signs.",
-  "fact": ""
+  "fact": "",
+  "reveal": "Québec City, Canada."
  },
  {
   "id": "vermont-us",
@@ -968,8 +968,8 @@
   "lat": 44.465,
   "lon": -72.687,
   "say": "Vermont in the USA",
-  "hint": "Watch the road.",
-  "fact": ""
+  "fact": "",
+  "reveal": "Stowe, USA."
  },
  {
   "id": "mexicocity-mx",
@@ -980,7 +980,7 @@
   "lat": 19.433,
   "lon": -99.133,
   "say": "Mexico City",
-  "hint": "Read the signs.",
-  "fact": ""
+  "fact": "",
+  "reveal": "Mexico City."
  }
 ]

@@ -77,6 +77,19 @@
         "Skógafoss, Iceland",
         "Reykjavík, Iceland"
       ]
+    },
+    {
+      "date": "2026-11-17T08:16:05+00:00",
+      "media_id": "17913973788480031",
+      "permalink": "https://www.instagram.com/reel/Df1evCPj064/",
+      "location_ids": [
+        "lauterbrunnen-ch",
+        "jokulsarlon-is"
+      ],
+      "places": [
+        "Lauterbrunnen Valley, Switzerland",
+        "Jökulsárlón, Iceland"
+      ]
     }
   ],
   "no_coverage": [
@@ -111,6 +124,9 @@
     "bruges-be",
     "pukaki-nz",
     "glencoe-uk",
-    "monumentvalley-us"
+    "monumentvalley-us",
+    "moher-ie",
+    "uluru-au",
+    "grandcanyon-us"
   ]
 }

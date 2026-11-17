@@ -33,6 +33,12 @@ class Voice:
         self.engine = TTS_ENGINE
         self._piper = None
         self._kokoro = None
+        if self.engine == "openai":
+            if not os.getenv("OPENAI_API_KEY"):
+                print("WARNING: TTS_ENGINE=openai but OPENAI_API_KEY is missing - falling back to Kokoro")
+                self.engine = "kokoro"
+            else:
+                print(f"  voice: OpenAI, {OPENAI_VOICE} ({OPENAI_TTS_MODEL})")
         if self.engine == "kokoro":
             try:
                 from kokoro_onnx import Kokoro

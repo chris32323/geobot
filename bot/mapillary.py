@@ -6,6 +6,7 @@ from PIL import Image
 from .config import MAPILLARY_TOKEN, MIN_PANO_WIDTH, REQUIRE_ROAD
 from .level import level_panorama
 from .safety import redact
+from . import vision
 
 Image.MAX_IMAGE_PIXELS = 120_000_000      # refuse absurdly large images (decompression-bomb guard)
 
@@ -75,11 +76,34 @@ def _sky_visible(arr):
     return float(sky_like.mean()) > 0.45
 
 
-def fetch_panorama(lon, lat, rng=None, kind="street"):
+def fetch_panorama(lon, lat, rng=None, kind="street", place=None):
     """Return (equirectangular RGB array, metadata dict). Raises NoPanorama."""
     if not MAPILLARY_TOKEN:
         raise RuntimeError("MAPILLARY_TOKEN is not set")
     rng = rng or random.Random()
+    state = {"checks": 0, "fallback": None}
+
+    def consider(got):
+        """Optional AI check. Returns the panorama to use, or None to keep looking."""
+        if not got:
+            return None
+        if not vision.ENABLED:
+            return got
+        if state["checks"] >= vision.MAX_CHECKS:
+            return state["fallback"] or got
+        state["checks"] += 1
+        res = vision.check(got[0], place or "this place", kind)
+        if res is None:
+            return got                                   # API problem: never block the post
+        got[1]["ai_check"] = res
+        print(f"  {got[1]['id']}: AI check {res}")
+        if not res["usable"] or res["spoiler"]:
+            return None
+        if kind != "street" and res["sight_visible"] is False:
+            state["fallback"] = state["fallback"] or got  # usable, but the sight isn't in view: keep as plan B
+            return None
+        return got
+
     need_road = REQUIRE_ROAD and kind == "street"
     for half in SEARCH.get(kind, SEARCH["street"]):
         cands = [m for m in _search(lon, lat, half) if _good(m)]
@@ -103,11 +127,14 @@ def fetch_panorama(lon, lat, rng=None, kind="street"):
                 if ok is None:
                     print(f"  {m['id']}: no Mapillary detections yet, will check the pixels instead")
                     maybes.append(m); continue
-            got = _download(m, lon, lat)
+            got = consider(_download(m, lon, lat))
             if got: return got
         for m in maybes[:4]:                  # no detections yet: rely on our own sky check only
-            got = _download(m, lon, lat)
+            got = consider(_download(m, lon, lat))
             if got: return got
+    if state["fallback"]:
+        print("  no view with the sight clearly visible - using the best usable panorama")
+        return state["fallback"]
     raise NoPanorama(f"no usable outdoor 360° panorama near {lat:.4f},{lon:.4f}")
 
 
@@ -136,5 +163,5 @@ def _download(m, lon, lat):
     meta = dict(id=m["id"], lon=geo[0], lat=geo[1], captured_at=m.get("captured_at"),
                 creator=(m.get("creator") or {}).get("username"),
                 url=f"https://www.mapillary.com/app/?pKey={m['id']}", level=lv)
-    print(f"  using panorama {m['id']}")
+    print(f"  downloaded panorama {m['id']}")
     return arr, meta

@@ -85,7 +85,8 @@ def build_rounds(n, rng, history, demo=False):
             else:
                 from .mapillary import fetch_panorama, NoPanorama
                 try:
-                    pano, meta = fetch_panorama(loc["lon"], loc["lat"], rng, kind=kind)
+                    pano, meta = fetch_panorama(loc["lon"], loc["lat"], rng, kind=kind,
+                                                place=f"{loc['name']}, {loc['country']}")
                 except NoPanorama as e:
                     print(f"  {e}"); history.setdefault("no_coverage", []).append(loc["id"]); continue
             fact = (loc.get("fact") or "").strip()
@@ -115,7 +116,7 @@ def make_caption(rounds):
             f"CC BY-SA 4.0. {links}\nMap data: Natural Earth.\n\n{config.HASHTAGS}")
 
 
-BOT_VERSION = "2026-11-17g (We're in ... reveals, Kokoro voice, auto-level, hardened, verbose image checks)"
+BOT_VERSION = "2026-11-17h (AI image check, OpenAI/Kokoro voice, auto-level, hardened)"
 
 
 def cmd_render(args):

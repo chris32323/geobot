@@ -18,19 +18,38 @@ class NoPanorama(Exception):
     pass
 
 
+class MapillaryTrouble(NoPanorama):
+    """Mapillary's API failed (server errors) - the place itself may be fine, so it is NOT blocked."""
+
+
+MAX_HALF = 0.045            # Mapillary allows at most 0.010 square degrees per box (0.09 x 0.09 here)
+_failures = {"in_a_row": 0}
+
+
 def _search(lon, lat, half):
+    """List of panoramas in the box, or None if Mapillary's API failed (not the same as 'nothing there')."""
+    half = min(half, MAX_HALF)
     bbox = f"{lon - half:.5f},{lat - half:.5f},{lon + half:.5f},{lat + half:.5f}"
-    for attempt in range(3):
+    limit = 100
+    for attempt in range(4):
         try:
             r = requests.get(API, params=dict(access_token=MAPILLARY_TOKEN, fields=FIELDS, bbox=bbox,
-                                              is_pano="true", limit=100), timeout=60)
+                                              is_pano="true", limit=limit), timeout=60)
             if r.status_code == 200:
+                _failures["in_a_row"] = 0
                 return r.json().get("data", [])
-            print(redact(f"  mapillary HTTP {r.status_code}: {r.text[:200]}"))
+            msg = r.text[:160]
+            print(redact(f"  mapillary HTTP {r.status_code} (limit {limit}): {msg}"))
+            if "reduce the amount" in msg or "unknown error" in msg:
+                limit = max(10, limit // 2)          # busy area: ask for fewer images at once
         except requests.RequestException as e:
             print(redact(f"  mapillary error: {e}"))
-        time.sleep(3 * (attempt + 1))
-    return []
+        time.sleep(2)
+    _failures["in_a_row"] += 1
+    if _failures["in_a_row"] >= 6:
+        raise RuntimeError("Mapillary API keeps failing (6 searches in a row) - stopping early, "
+                           "the next scheduled run will try again")
+    return None
 
 
 def _good(img_meta):
@@ -64,16 +83,21 @@ def _is_outdoor(classes, need_road):
 
 # search box half-sizes in degrees: sights must be close so the landmark is actually in the picture
 SEARCH = {"landmark": (0.002, 0.004, 0.008), "border": (0.002, 0.004, 0.008),
-          "landscape": (0.004, 0.012, 0.03), "street": (0.01, 0.025, 0.05)}
+          "landscape": (0.004, 0.012, 0.03), "street": (0.004, 0.012, 0.03)}   # cities are dense: small boxes
 
 
 def _sky_visible(arr):
-    """Own check on the pixels: the top of an outdoor panorama is mostly sky, indoors it is a ceiling."""
-    top = arr[: int(arr.shape[0] * 0.2)].astype(np.float32)
+    """Own check on the pixels: the upper part of an outdoor panorama is mostly sky, indoors it is a ceiling.
+    Counts deep blue (clear desert / mountain sky), light blue, and bright grey/white (overcast) as sky."""
+    h = arr.shape[0]
+    top = arr[int(h * 0.02): int(h * 0.22)].astype(np.float32)
     r, g, b = top[..., 0], top[..., 1], top[..., 2]
     bright = (r + g + b) / 3
-    sky_like = ((b >= r - 8) & (bright > 115)) | (bright > 195)
-    return float(sky_like.mean()) > 0.45
+    spread = np.max(top, axis=-1) - np.min(top, axis=-1)
+    blue = (b > r + 20) & (b >= g - 5) & (b > 80)
+    overcast = (bright > 165) & (spread < 45)
+    sky_like = blue | overcast | (bright > 205)
+    return float(sky_like.mean()) > 0.40
 
 
 def fetch_panorama(lon, lat, rng=None, kind="street", place=None):
@@ -105,8 +129,13 @@ def fetch_panorama(lon, lat, rng=None, kind="street", place=None):
         return got
 
     need_road = REQUIRE_ROAD and kind == "street"
+    api_failed = 0; searches = 0
     for half in SEARCH.get(kind, SEARCH["street"]):
-        cands = [m for m in _search(lon, lat, half) if _good(m)]
+        searches += 1
+        found = _search(lon, lat, half)
+        if found is None:
+            api_failed += 1; continue
+        cands = [m for m in found if _good(m)]
         print(f"  bbox ±{half}°: {len(cands)} usable panoramas")
         rng.shuffle(cands)
         # sights: closest first; streets: recent, high-resolution captures first
@@ -119,6 +148,7 @@ def fetch_panorama(lon, lat, rng=None, kind="street", place=None):
             cands.sort(key=dist)
         maybes = []
         for m in cands[:15]:
+            ok = None
             if REQUIRE_ROAD:
                 ok = _is_outdoor(_detected_classes(m["id"]), need_road)
                 if ok is False:
@@ -127,7 +157,7 @@ def fetch_panorama(lon, lat, rng=None, kind="street", place=None):
                 if ok is None:
                     print(f"  {m['id']}: no Mapillary detections yet, will check the pixels instead")
                     maybes.append(m); continue
-            got = consider(_download(m, lon, lat))
+            got = consider(_download(m, lon, lat, sky_known=ok is True))
             if got: return got
         for m in maybes[:4]:                  # no detections yet: rely on our own sky check only
             got = consider(_download(m, lon, lat))
@@ -135,10 +165,12 @@ def fetch_panorama(lon, lat, rng=None, kind="street", place=None):
     if state["fallback"]:
         print("  no view with the sight clearly visible - using the best usable panorama")
         return state["fallback"]
+    if api_failed == searches:
+        raise MapillaryTrouble(f"Mapillary API errors near {lat:.4f},{lon:.4f}")
     raise NoPanorama(f"no usable outdoor 360° panorama near {lat:.4f},{lon:.4f}")
 
 
-def _download(m, lon, lat):
+def _download(m, lon, lat, sky_known=False):
     try:
         r = requests.get(m["thumb_original_url"], timeout=120)
         r.raise_for_status()
@@ -152,7 +184,7 @@ def _download(m, lon, lat):
     if arr.std() < 12:                     # blank / broken image
         print(f"  {m['id']}: image is blank or broken, skipped")
         return None
-    if REQUIRE_ROAD and not _sky_visible(arr):
+    if REQUIRE_ROAD and not sky_known and not _sky_visible(arr):   # Mapillary already saw sky -> trust it
         print(f"  {m['id']}: no open sky at the top (probably indoors), skipped")
         return None
     arr, lv = level_panorama(arr)          # straighten a crooked camera, or skip if far too tilted

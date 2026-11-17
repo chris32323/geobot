@@ -218,7 +218,8 @@ class Voice:
             raise RuntimeError("OpenAI realtime: no audio")
         return (bytes(pcm), 24000), "".join(transcript)
 
-    def _one(self, text):
+    def _take(self, text):
+        """One take of one sentence -> float32 array at 44.1 kHz (silence trimmed)."""
         self.n += 1
         raw = self.dir / f"line{self.n:02d}.wav"
         if self.engine == "openai":
@@ -239,6 +240,13 @@ class Voice:
         a = _wav_to_array(raw, pitch=VOICE_PITCH)
         nz = np.flatnonzero(np.abs(a) > 0.01)                # trim leading/trailing silence
         return a[max(nz[0] - 800, 0): nz[-1] + 1600] if len(nz) else a
+
+    def _one(self, text):
+        """AI voices vary from take to take: check pitch (and let an AI listen), retake bad ones."""
+        if self.engine != "openai":
+            return self._take(text)                           # Kokoro/Piper sound the same every time
+        from .voiceqa import best_take
+        return best_take(lambda: self._take(text), text)
 
     def say(self, text, max_len=None):
         """Speak a line calmly: each sentence separately, with a short pause in between. Never sped up."""

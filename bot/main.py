@@ -116,7 +116,7 @@ def make_caption(rounds):
             f"CC BY-SA 4.0. {links}\nMap data: Natural Earth.\n\n{config.HASHTAGS}")
 
 
-BOT_VERSION = "2026-11-17l (voice quality check: pitch + AI listening, retakes)"
+BOT_VERSION = "2026-11-17m (voice check + ffmpeg sound polish)"
 
 
 def cmd_render(args):

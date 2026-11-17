@@ -348,11 +348,13 @@ class Reel:
             for k in range(guess_s): sfx(b + tl["guess0"] + k, tick(k >= guess_s - 1), 0.8)
             sfx(b + tl["pin"] + 0.2, pop()); sfx(b + tl["card"], chime())
         sfx(self.rounds_end + 0.15, chime())
+        from .audiofx import fade, polish_voice, master
         voice = np.zeros(N, np.float32)
         for t0, clip in self.clips:
+            clip = fade(clip)
             i = int(t0 * SR); j = min(N, i + len(clip)); voice[i:j] += clip[: j - i]
-        a = a + voice * 1.1
-        a = np.clip(a, -1, 1)
+        voice = polish_voice(voice)
+        a = master(a + voice * 1.1)
         with wave.open(str(path), "wb") as w:
             w.setnchannels(1); w.setsampwidth(2); w.setframerate(SR)
             w.writeframes((a * 32000).astype(np.int16).tobytes())

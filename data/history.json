@@ -129,6 +129,19 @@
         "Burj Khalifa, Dubai, United Arab Emirates",
         "Rothenburg ob der Tauber, Germany"
       ]
+    },
+    {
+      "date": "2026-11-17T11:19:55+00:00",
+      "media_id": "18136606183663389",
+      "permalink": "https://www.instagram.com/reel/Df1zySQgj25/",
+      "location_ids": [
+        "goldengate-us",
+        "atlanticroad-no"
+      ],
+      "places": [
+        "Golden Gate Bridge, USA",
+        "Atlantic Ocean Road, Norway"
+      ]
     }
   ],
   "no_coverage": [
@@ -177,6 +190,8 @@
     "christ-br",
     "stonehenge-uk",
     "merzouga-ma",
-    "apostles-au"
+    "apostles-au",
+    "fourcorners-us",
+    "furka-ch"
   ]
 }

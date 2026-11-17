@@ -103,6 +103,19 @@
         "Lake Kawaguchi, Mount Fuji, Japan",
         "Biei, Hokkaido, Japan"
       ]
+    },
+    {
+      "date": "2026-11-17T10:01:00+00:00",
+      "media_id": "18100762037557021",
+      "permalink": "https://www.instagram.com/reel/Df1qvcHjqvz/",
+      "location_ids": [
+        "shibuya-jp",
+        "quebec-ca"
+      ],
+      "places": [
+        "Shibuya Crossing, Tokyo, Japan",
+        "Québec City, Canada"
+      ]
     }
   ],
   "no_coverage": [

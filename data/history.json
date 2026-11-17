@@ -90,6 +90,19 @@
         "Lauterbrunnen Valley, Switzerland",
         "Jökulsárlón, Iceland"
       ]
+    },
+    {
+      "date": "2026-11-17T08:57:04+00:00",
+      "media_id": "18156635902495435",
+      "permalink": "https://www.instagram.com/reel/Df1jbpXEj79/",
+      "location_ids": [
+        "fuji-jp",
+        "biei-jp"
+      ],
+      "places": [
+        "Lake Kawaguchi, Mount Fuji, Japan",
+        "Biei, Hokkaido, Japan"
+      ]
     }
   ],
   "no_coverage": [
@@ -127,6 +140,8 @@
     "monumentvalley-us",
     "moher-ie",
     "uluru-au",
-    "grandcanyon-us"
+    "grandcanyon-us",
+    "kyoto-jp",
+    "mexicocity-mx"
   ]
 }

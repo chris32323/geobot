@@ -59,6 +59,9 @@ jobs:
           VOICE_MAX_PITCH_HZ: ${{ vars.VOICE_MAX_PITCH_HZ }}
           VOICE_MAX_JUMPS: ${{ vars.VOICE_MAX_JUMPS }}
           VOICE_MAX_SWING: ${{ vars.VOICE_MAX_SWING }}
+          AUDIO_FX: ${{ vars.AUDIO_FX }}
+          AUDIO_WARMTH: ${{ vars.AUDIO_WARMTH }}
+          AUDIO_REVERB: ${{ vars.AUDIO_REVERB }}
           OPENAI_TTS_MODEL: ${{ vars.OPENAI_TTS_MODEL || 'gpt-realtime-2.1' }}
           VISION_MODEL: ${{ vars.VISION_MODEL || 'gpt-5-mini' }}
           VISION_CHECK: ${{ vars.VISION_CHECK || '1' }}

@@ -207,6 +207,19 @@
         "Sydney Opera House, Australia",
         "Plitvice Lakes, Croatia"
       ]
+    },
+    {
+      "date": "2026-11-17T23:33:02+00:00",
+      "media_id": "17978233914141333",
+      "permalink": "https://www.instagram.com/reel/Df3HxxKjwh5/",
+      "location_ids": [
+        "tablemountain-za",
+        "marrakesh-ma"
+      ],
+      "places": [
+        "Table Mountain, Cape Town, South Africa",
+        "Marrakesh, Morocco"
+      ]
     }
   ],
   "no_coverage": {

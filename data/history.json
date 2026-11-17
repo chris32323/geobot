@@ -155,6 +155,19 @@
         "Times Square, New York, USA",
         "Stelvio Pass, Italy"
       ]
+    },
+    {
+      "date": "2026-11-17T12:29:51+00:00",
+      "media_id": "17908156704352866",
+      "permalink": "https://www.instagram.com/reel/Df17xuTE0sh/",
+      "location_ids": [
+        "eiffel-fr",
+        "reine-no"
+      ],
+      "places": [
+        "Eiffel Tower, Paris, France",
+        "Reine, Lofoten, Norway"
+      ]
     }
   ],
   "no_coverage": [
@@ -205,6 +218,11 @@
     "merzouga-ma",
     "apostles-au",
     "fourcorners-us",
-    "furka-ch"
+    "furka-ch",
+    "operahouse-au",
+    "baarle-nl",
+    "klevan-ua",
+    "deathvalley-us",
+    "plitvice-hr"
   ]
 }

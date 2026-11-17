@@ -37,12 +37,29 @@ def load_json(p, default):
         return default
 
 
+NO_COVERAGE_DAYS = 21          # a place without a usable panorama is skipped for 3 weeks, then tried again
+
+
+def _no_coverage(history):
+    """{location_id: 'YYYY-MM-DD'}. Old versions kept a permanent list -> start fresh."""
+    nc = history.get("no_coverage")
+    if not isinstance(nc, dict):
+        nc = {}; history["no_coverage"] = nc
+    return nc
+
+
+def blocked(history):
+    from datetime import date, timedelta
+    limit = (date.today() - timedelta(days=NO_COVERAGE_DAYS)).isoformat()
+    return {i for i, d in _no_coverage(history).items() if d > limit}
+
+
 def available_locations(history):
     locs = load_json(LOCATIONS, [])
     used = set()
     for post in history.get("posted", [])[-60:]:
         used.update(post.get("location_ids", []))
-    dead = set(history.get("no_coverage", []))
+    dead = blocked(history)
     fresh = [l for l in locs if l["id"] not in used and l["id"] not in dead]
     return fresh or [l for l in locs if l["id"] not in dead]
 
@@ -88,7 +105,9 @@ def build_rounds(n, rng, history, demo=False):
                     pano, meta = fetch_panorama(loc["lon"], loc["lat"], rng, kind=kind,
                                                 place=f"{loc['name']}, {loc['country']}")
                 except NoPanorama as e:
-                    print(f"  {e}"); history.setdefault("no_coverage", []).append(loc["id"]); continue
+                    print(f"  {e} - skipping this place for {NO_COVERAGE_DAYS} days")
+                    from datetime import date
+                    _no_coverage(history)[loc["id"]] = date.today().isoformat(); continue
             fact = (loc.get("fact") or "").strip()
             reveal = loc.get("reveal") or f"This is {loc.get('say') or loc['name']}."
             if slot == 0: reveal += " Did you get it right?"
@@ -116,7 +135,7 @@ def make_caption(rounds):
             f"CC BY-SA 4.0. {links}\nMap data: Natural Earth.\n\n{config.HASHTAGS}")
 
 
-BOT_VERSION = "2026-11-17m (voice check + ffmpeg sound polish)"
+BOT_VERSION = "2026-11-17n (voice check, sound polish, places retried after 21 days)"
 
 
 def cmd_render(args):
@@ -124,7 +143,7 @@ def cmd_render(args):
     out = Path(args.out); out.mkdir(parents=True, exist_ok=True)
     seed = args.seed if args.seed is not None else int(dt.datetime.now(dt.timezone.utc).strftime("%Y%m%d"))
     rng = random.Random(seed)
-    history = load_json(HISTORY, {"posted": [], "no_coverage": []})
+    history = load_json(HISTORY, {"posted": [], "no_coverage": {}})
     rounds = build_rounds(config.ROUNDS_PER_REEL, rng, history, demo=args.demo)
     tts = None
     try:
@@ -159,7 +178,7 @@ def cmd_publish(args):
     meta = json.loads((out / "meta.json").read_text(encoding="utf-8"))
     mid, link = publish_reel(args.video_url, caption)
     print("published:", mid, link or "")
-    history = load_json(HISTORY, {"posted": [], "no_coverage": []})
+    history = load_json(HISTORY, {"posted": [], "no_coverage": {}})
     history["posted"].append(dict(date=meta["date"], media_id=mid, permalink=link,
                                   location_ids=meta["location_ids"], places=meta["places"]))
     HISTORY.write_text(json.dumps(history, indent=2, ensure_ascii=False), encoding="utf-8")

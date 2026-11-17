@@ -116,6 +116,19 @@
         "Shibuya Crossing, Tokyo, Japan",
         "Québec City, Canada"
       ]
+    },
+    {
+      "date": "2026-11-17T10:21:55+00:00",
+      "media_id": "18107158829380092",
+      "permalink": "https://www.instagram.com/reel/Df1tIwkjHIV/",
+      "location_ids": [
+        "burjkhalifa-ae",
+        "rothenburg-de"
+      ],
+      "places": [
+        "Burj Khalifa, Dubai, United Arab Emirates",
+        "Rothenburg ob der Tauber, Germany"
+      ]
     }
   ],
   "no_coverage": [
@@ -159,6 +172,7 @@
     "tablemountain-za",
     "bixby-us",
     "spaceneedle-us",
-    "neuschwanstein-de"
+    "neuschwanstein-de",
+    "porto-pt"
   ]
 }

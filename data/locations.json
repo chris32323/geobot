@@ -9,7 +9,7 @@
   "lon": 2.2945,
   "say": "the Eiffel Tower in Paris",
   "fact": "Built for the 1889 World's Fair.",
-  "reveal": "The Eiffel Tower, built in 1889."
+  "reveal": "We're at the Eiffel Tower, built in 1889."
  },
  {
   "id": "colosseum-it",
@@ -21,7 +21,7 @@
   "lon": 12.4922,
   "say": "the Colosseum in Rome",
   "fact": "Almost 2000 years old.",
-  "reveal": "Rome's Colosseum, almost two thousand years old."
+  "reveal": "We're at Rome's Colosseum, two thousand years old."
  },
  {
   "id": "brandenburg-de",
@@ -33,7 +33,7 @@
   "lon": 13.3777,
   "say": "the Brandenburg Gate in Berlin",
   "fact": "The Berlin Wall stood right here.",
-  "reveal": "Berlin's Brandenburg Gate, where the Wall stood."
+  "reveal": "We're at Berlin's Brandenburg Gate."
  },
  {
   "id": "olympiapark-de",
@@ -45,7 +45,7 @@
   "lon": 11.5466,
   "say": "the Olympic Park in Munich",
   "fact": "Home of the 1972 Olympics.",
-  "reveal": "Munich's Olympic Park, home of 1972."
+  "reveal": "We're in Munich's Olympic Park, home of 1972."
  },
  {
   "id": "sagrada-es",
@@ -57,7 +57,7 @@
   "lon": 2.1744,
   "say": "the Sagrada Família in Barcelona",
   "fact": "Under construction since 1882.",
-  "reveal": "Barcelona's Sagrada Família, unfinished since 1882."
+  "reveal": "We're at Barcelona's Sagrada Família."
  },
  {
   "id": "towerbridge-uk",
@@ -69,7 +69,7 @@
   "lon": -0.0754,
   "say": "Tower Bridge in London",
   "fact": "Opened in 1894.",
-  "reveal": "London's Tower Bridge, opened in 1894."
+  "reveal": "We're at London's Tower Bridge, opened in 1894."
  },
  {
   "id": "atomium-be",
@@ -81,7 +81,7 @@
   "lon": 4.3415,
   "say": "the Atomium in Brussels",
   "fact": "Built for the 1958 World Expo.",
-  "reveal": "The Atomium in Brussels, from 1958."
+  "reveal": "We're at the Atomium in Brussels."
  },
  {
   "id": "pisa-it",
@@ -93,7 +93,7 @@
   "lon": 10.3966,
   "say": "the Leaning Tower of Pisa",
   "fact": "It started leaning during construction.",
-  "reveal": "The Leaning Tower of Pisa."
+  "reveal": "We're at the Leaning Tower of Pisa."
  },
  {
   "id": "neuschwanstein-de",
@@ -105,7 +105,7 @@
   "lon": 10.7498,
   "say": "Neuschwanstein Castle in Bavaria",
   "fact": "Built by King Ludwig the Second.",
-  "reveal": "Neuschwanstein, King Ludwig's fairytale castle."
+  "reveal": "We're at Neuschwanstein, King Ludwig's castle."
  },
  {
   "id": "montstmichel-fr",
@@ -117,7 +117,7 @@
   "lon": -1.5115,
   "say": "Mont-Saint-Michel in France",
   "fact": "An island at high tide.",
-  "reveal": "Mont-Saint-Michel, an island at high tide."
+  "reveal": "We're at Mont-Saint-Michel in France."
  },
  {
   "id": "stonehenge-uk",
@@ -129,7 +129,7 @@
   "lon": -1.8262,
   "say": "Stonehenge in England",
   "fact": "About 5000 years old.",
-  "reveal": "Stonehenge, about five thousand years old."
+  "reveal": "We're at Stonehenge, five thousand years old."
  },
  {
   "id": "charlesbridge-cz",
@@ -141,7 +141,7 @@
   "lon": 14.4114,
   "say": "the Charles Bridge in Prague",
   "fact": "Construction started in 1357.",
-  "reveal": "Prague's Charles Bridge, built in 1357."
+  "reveal": "We're at Prague's Charles Bridge, built in 1357."
  },
  {
   "id": "hagiasophia-tr",
@@ -153,7 +153,7 @@
   "lon": 28.9802,
   "say": "Hagia Sophia in Istanbul",
   "fact": "Almost 1500 years old.",
-  "reveal": "Istanbul's Hagia Sophia, fifteen centuries old."
+  "reveal": "We're at Hagia Sophia in Istanbul."
  },
  {
   "id": "goldengate-us",
@@ -165,7 +165,7 @@
   "lon": -122.475,
   "say": "the Golden Gate Bridge in San Francisco",
   "fact": "Opened in 1937.",
-  "reveal": "The Golden Gate Bridge, opened in 1937."
+  "reveal": "We're at San Francisco's Golden Gate Bridge."
  },
  {
   "id": "timessquare-us",
@@ -177,7 +177,7 @@
   "lon": -73.9855,
   "say": "Times Square in New York",
   "fact": "Named after The New York Times.",
-  "reveal": "Times Square in New York City."
+  "reveal": "We're in Times Square, New York."
  },
  {
   "id": "spaceneedle-us",
@@ -189,7 +189,7 @@
   "lon": -122.3493,
   "say": "the Space Needle in Seattle",
   "fact": "Built for the 1962 World's Fair.",
-  "reveal": "Seattle's Space Needle, built in 1962."
+  "reveal": "We're at Seattle's Space Needle."
  },
  {
   "id": "cntower-ca",
@@ -201,7 +201,7 @@
   "lon": -79.3871,
   "say": "the CN Tower in Toronto",
   "fact": "Over 550 meters tall.",
-  "reveal": "Toronto's CN Tower, over 550 meters tall."
+  "reveal": "We're at Toronto's CN Tower."
  },
  {
   "id": "operahouse-au",
@@ -213,7 +213,7 @@
   "lon": 151.2153,
   "say": "the Sydney Opera House",
   "fact": "Opened in 1973.",
-  "reveal": "The Sydney Opera House, opened in 1973."
+  "reveal": "We're at the Sydney Opera House."
  },
  {
   "id": "shibuya-jp",
@@ -225,7 +225,7 @@
   "lon": 139.7005,
   "say": "Shibuya Crossing in Tokyo",
   "fact": "One of the world's busiest crossings.",
-  "reveal": "Tokyo's Shibuya Crossing, the world's busiest."
+  "reveal": "We're at Shibuya Crossing in Tokyo."
  },
  {
   "id": "burjkhalifa-ae",
@@ -237,7 +237,7 @@
   "lon": 55.2744,
   "say": "the Burj Khalifa in Dubai",
   "fact": "The tallest building in the world.",
-  "reveal": "Dubai's Burj Khalifa, the world's tallest building."
+  "reveal": "We're at the Burj Khalifa, the world's tallest."
  },
  {
   "id": "christ-br",
@@ -249,7 +249,7 @@
   "lon": -43.2105,
   "say": "Christ the Redeemer in Rio de Janeiro",
   "fact": "The statue is 30 meters tall.",
-  "reveal": "Christ the Redeemer in Rio."
+  "reveal": "We're at Christ the Redeemer in Rio."
  },
  {
   "id": "petronas-my",
@@ -261,7 +261,7 @@
   "lon": 101.7116,
   "say": "the Petronas Towers in Kuala Lumpur",
   "fact": "The tallest twin towers on Earth.",
-  "reveal": "The Petronas Towers in Kuala Lumpur."
+  "reveal": "We're at the Petronas Towers, Kuala Lumpur."
  },
  {
   "id": "tajmahal-in",
@@ -273,7 +273,7 @@
   "lon": 78.0421,
   "say": "the Taj Mahal in India",
   "fact": "Built as a tomb.",
-  "reveal": "The Taj Mahal, built as a tomb."
+  "reveal": "We're at the Taj Mahal in India."
  },
  {
   "id": "grossglockner-at",
@@ -285,7 +285,7 @@
   "lon": 12.7495,
   "say": "the Grossglockner in Austria",
   "fact": "Austria's highest mountain is right here.",
-  "reveal": "The Grossglockner, Austria's highest mountain."
+  "reveal": "We're at the Grossglockner, Austria's highest mountain."
  },
  {
   "id": "stelvio-it",
@@ -297,7 +297,7 @@
   "lon": 10.4532,
   "say": "the Stelvio Pass in Italy",
   "fact": "48 hairpin bends on one side.",
-  "reveal": "Italy's Stelvio Pass, 48 hairpin bends."
+  "reveal": "We're in Italy, at the Stelvio Pass."
  },
  {
   "id": "furka-ch",
@@ -309,7 +309,7 @@
   "lon": 8.4165,
   "say": "the Furka Pass in Switzerland",
   "fact": "James Bond drove here in 1964.",
-  "reveal": "Switzerland's Furka Pass, a James Bond road."
+  "reveal": "We're in Switzerland, at the Furka Pass."
  },
  {
   "id": "giau-it",
@@ -321,7 +321,7 @@
   "lon": 12.0538,
   "say": "the Dolomites in Italy",
   "fact": "A UNESCO World Heritage Site.",
-  "reveal": "The Dolomites in northern Italy."
+  "reveal": "We're in Italy, in the Dolomites."
  },
  {
   "id": "lauterbrunnen-ch",
@@ -333,7 +333,7 @@
   "lon": 7.9087,
   "say": "Lauterbrunnen in Switzerland",
   "fact": "A valley with 72 waterfalls.",
-  "reveal": "Lauterbrunnen, a valley of 72 waterfalls."
+  "reveal": "We're in Lauterbrunnen, Switzerland."
  },
  {
   "id": "trollstigen-no",
@@ -345,7 +345,7 @@
   "lon": 7.669,
   "say": "Trollstigen in Norway",
   "fact": "Eleven hairpin bends up the mountain.",
-  "reveal": "Norway's Trollstigen, eleven hairpin bends."
+  "reveal": "We're in Norway, at Trollstigen."
  },
  {
   "id": "atlanticroad-no",
@@ -357,7 +357,7 @@
   "lon": 7.354,
   "say": "the Atlantic Ocean Road in Norway",
   "fact": "A road that hops across the ocean.",
-  "reveal": "Norway's Atlantic Ocean Road."
+  "reveal": "We're in Norway, on the Atlantic Road."
  },
  {
   "id": "reine-no",
@@ -369,7 +369,7 @@
   "lon": 13.089,
   "say": "Reine in the Lofoten islands",
   "fact": "Above the Arctic Circle.",
-  "reveal": "Reine, above the Arctic Circle."
+  "reveal": "We're in Norway, above the Arctic Circle."
  },
  {
   "id": "transfagarasan-ro",
@@ -381,7 +381,7 @@
   "lon": 24.617,
   "say": "the Transfăgărășan in Romania",
   "fact": "Built in the 1970s.",
-  "reveal": "Romania's Transfăgărășan mountain road."
+  "reveal": "We're in Romania, in the Carpathian Mountains."
  },
  {
   "id": "skogafoss-is",
@@ -393,7 +393,7 @@
   "lon": -19.5114,
   "say": "Skógafoss in Iceland",
   "fact": "A 60-meter waterfall.",
-  "reveal": "Iceland's Skógafoss, a sixty-meter waterfall."
+  "reveal": "We're at Skógafoss, a waterfall in Iceland."
  },
  {
   "id": "jokulsarlon-is",
@@ -405,7 +405,7 @@
   "lon": -16.1795,
   "say": "Jökulsárlón in Iceland",
   "fact": "Icebergs right next to the road.",
-  "reveal": "Iceland's Jökulsárlón glacier lagoon."
+  "reveal": "We're in Iceland, at a glacier lagoon."
  },
  {
   "id": "glencoe-uk",
@@ -417,7 +417,7 @@
   "lon": -5.007,
   "say": "Glencoe in Scotland",
   "fact": "A James Bond film was shot here.",
-  "reveal": "Glencoe in the Scottish Highlands."
+  "reveal": "We're in Scotland, in the Highlands."
  },
  {
   "id": "moher-ie",
@@ -429,7 +429,7 @@
   "lon": -9.4309,
   "say": "the Cliffs of Moher in Ireland",
   "fact": "Over 200 meters high.",
-  "reveal": "Ireland's Cliffs of Moher."
+  "reveal": "We're at the Cliffs of Moher, Ireland."
  },
  {
   "id": "plitvice-hr",
@@ -441,7 +441,7 @@
   "lon": 15.616,
   "say": "Plitvice Lakes in Croatia",
   "fact": "16 lakes linked by waterfalls.",
-  "reveal": "Croatia's Plitvice Lakes."
+  "reveal": "We're in Croatia, at Plitvice Lakes."
  },
  {
   "id": "synevyr-ua",
@@ -453,7 +453,7 @@
   "lon": 23.683,
   "say": "Lake Synevyr in Ukraine",
   "fact": "The Pearl of the Carpathians.",
-  "reveal": "Lake Synevyr in the Ukrainian Carpathians."
+  "reveal": "We're in Ukraine, in the Carpathians."
  },
  {
   "id": "klevan-ua",
@@ -465,7 +465,7 @@
   "lon": 26.0447,
   "say": "the Tunnel of Love in Ukraine",
   "fact": "A tunnel made of trees.",
-  "reveal": "Ukraine's Tunnel of Love, made of trees."
+  "reveal": "We're in Ukraine, at the Tunnel of Love."
  },
  {
   "id": "merzouga-ma",
@@ -477,7 +477,7 @@
   "lon": -4.012,
   "say": "Merzouga in Morocco",
   "fact": "The edge of the Sahara.",
-  "reveal": "Merzouga, at the edge of the Sahara."
+  "reveal": "We're in Morocco, at the Sahara's edge."
  },
  {
   "id": "monumentvalley-us",
@@ -489,7 +489,7 @@
   "lon": -109.99,
   "say": "Monument Valley in the USA",
   "fact": "A famous movie run ended here.",
-  "reveal": "Monument Valley in Arizona and Utah."
+  "reveal": "We're in Monument Valley, USA."
  },
  {
   "id": "grandcanyon-us",
@@ -501,7 +501,7 @@
   "lon": -112.1077,
   "say": "the Grand Canyon",
   "fact": "Up to 1.8 kilometers deep.",
-  "reveal": "The Grand Canyon in Arizona."
+  "reveal": "We're at the Grand Canyon in Arizona."
  },
  {
   "id": "deathvalley-us",
@@ -513,7 +513,7 @@
   "lon": -116.7676,
   "say": "Death Valley in California",
   "fact": "The lowest point in North America.",
-  "reveal": "Death Valley, North America's lowest point."
+  "reveal": "We're in California, in Death Valley."
  },
  {
   "id": "bixby-us",
@@ -525,7 +525,7 @@
   "lon": -121.902,
   "say": "Bixby Bridge in California",
   "fact": "Built in 1932.",
-  "reveal": "California's Bixby Bridge, built in 1932."
+  "reveal": "We're at Bixby Bridge in California."
  },
  {
   "id": "icefields-ca",
@@ -537,7 +537,7 @@
   "lon": -117.224,
   "say": "the Icefields Parkway in Canada",
   "fact": "Glaciers right next to the road.",
-  "reveal": "Canada's Icefields Parkway."
+  "reveal": "We're in Canada, in the Rocky Mountains."
  },
  {
   "id": "uluru-au",
@@ -549,7 +549,7 @@
   "lon": 131.036,
   "say": "Uluru in Australia",
   "fact": "About 350 meters tall.",
-  "reveal": "Uluru in the Australian outback."
+  "reveal": "We're at Uluru in the Australian outback."
  },
  {
   "id": "apostles-au",
@@ -561,7 +561,7 @@
   "lon": 143.105,
   "say": "the Twelve Apostles in Australia",
   "fact": "Rock pillars in the ocean.",
-  "reveal": "Australia's Twelve Apostles."
+  "reveal": "We're in Australia, on the Great Ocean Road."
  },
  {
   "id": "pukaki-nz",
@@ -573,7 +573,7 @@
   "lon": 170.134,
   "say": "Lake Pukaki in New Zealand",
   "fact": "Near New Zealand's highest mountain.",
-  "reveal": "Lake Pukaki in New Zealand."
+  "reveal": "We're in New Zealand, at Lake Pukaki."
  },
  {
   "id": "fuji-jp",
@@ -585,7 +585,7 @@
   "lon": 138.752,
   "say": "Mount Fuji in Japan",
   "fact": "3776 meters tall.",
-  "reveal": "Mount Fuji, Japan's highest mountain."
+  "reveal": "We're at Mount Fuji in Japan."
  },
  {
   "id": "tablemountain-za",
@@ -597,7 +597,7 @@
   "lon": 18.403,
   "say": "Table Mountain in Cape Town",
   "fact": "Often covered by a cloud tablecloth.",
-  "reveal": "Table Mountain in Cape Town."
+  "reveal": "We're at Table Mountain in Cape Town."
  },
  {
   "id": "vaals-tripoint",
@@ -609,7 +609,7 @@
   "lon": 6.0207,
   "say": "the Vaalserberg in the Netherlands",
   "fact": "Three countries meet right here.",
-  "reveal": "Vaals, where three countries meet."
+  "reveal": "We're at Vaals, where three countries meet."
  },
  {
   "id": "basel-tripoint",
@@ -621,7 +621,7 @@
   "lon": 7.5896,
   "say": "Basel in Switzerland",
   "fact": "Three countries meet in the Rhine.",
-  "reveal": "Basel, where three countries meet."
+  "reveal": "We're in Basel, where three countries meet."
  },
  {
   "id": "schengen-lu",
@@ -633,7 +633,7 @@
   "lon": 6.3672,
   "say": "Schengen in Luxembourg",
   "fact": "The Schengen Agreement was signed here.",
-  "reveal": "Schengen, birthplace of borderless Europe."
+  "reveal": "We're in Schengen, where borderless Europe began."
  },
  {
   "id": "baarle-nl",
@@ -645,7 +645,7 @@
   "lon": 4.9289,
   "say": "Baarle in the Netherlands",
   "fact": "The border runs through houses.",
-  "reveal": "Baarle, where borders cross through houses."
+  "reveal": "We're in Baarle, where borders cross houses."
  },
  {
   "id": "fourcorners-us",
@@ -657,7 +657,7 @@
   "lon": -109.0452,
   "say": "Four Corners in the USA",
   "fact": "Four US states meet right here.",
-  "reveal": "Four Corners, where four states meet."
+  "reveal": "We're at Four Corners, where four states meet."
  },
  {
   "id": "niagara-ca",
@@ -669,7 +669,7 @@
   "lon": -79.0742,
   "say": "Niagara Falls",
   "fact": "The US-Canada border runs through it.",
-  "reveal": "Niagara Falls, on the US-Canada border."
+  "reveal": "We're at Niagara Falls, on the border."
  },
  {
   "id": "kitzbuehel-at",
@@ -681,7 +681,7 @@
   "lon": 12.392,
   "say": "Kitzbühel in Austria",
   "fact": "",
-  "reveal": "Kitzbühel, Austria."
+  "reveal": "We're in Kitzbühel, Austria."
  },
  {
   "id": "hallstatt-at",
@@ -693,7 +693,7 @@
   "lon": 13.649,
   "say": "Hallstatt in Austria",
   "fact": "",
-  "reveal": "Hallstatt, Austria."
+  "reveal": "We're in Hallstatt, Austria."
  },
  {
   "id": "rothenburg-de",
@@ -705,7 +705,7 @@
   "lon": 10.179,
   "say": "Rothenburg in Germany",
   "fact": "",
-  "reveal": "Rothenburg ob der Tauber, Germany."
+  "reveal": "We're in Rothenburg ob der Tauber, Germany."
  },
  {
   "id": "amsterdam-nl",
@@ -717,7 +717,7 @@
   "lon": 4.893,
   "say": "Amsterdam",
   "fact": "",
-  "reveal": "Amsterdam, Netherlands."
+  "reveal": "We're in Amsterdam, the Netherlands."
  },
  {
   "id": "bruges-be",
@@ -729,7 +729,7 @@
   "lon": 3.225,
   "say": "Bruges in Belgium",
   "fact": "",
-  "reveal": "Bruges, Belgium."
+  "reveal": "We're in Bruges, Belgium."
  },
  {
   "id": "porto-pt",
@@ -741,7 +741,7 @@
   "lon": -8.611,
   "say": "Porto in Portugal",
   "fact": "",
-  "reveal": "Porto, Portugal."
+  "reveal": "We're in Porto, Portugal."
  },
  {
   "id": "seville-es",
@@ -753,7 +753,7 @@
   "lon": -5.984,
   "say": "Seville in Spain",
   "fact": "",
-  "reveal": "Seville, Spain."
+  "reveal": "We're in Seville, Spain."
  },
  {
   "id": "tuscany-it",
@@ -765,7 +765,7 @@
   "lon": 11.61,
   "say": "Tuscany in Italy",
   "fact": "",
-  "reveal": "Val d'Orcia, Italy."
+  "reveal": "We're in Italy!"
  },
  {
   "id": "edinburgh-uk",
@@ -777,7 +777,7 @@
   "lon": -3.189,
   "say": "Edinburgh in Scotland",
   "fact": "",
-  "reveal": "Edinburgh, United Kingdom."
+  "reveal": "We're in Edinburgh, Scotland."
  },
  {
   "id": "dublin-ie",
@@ -789,7 +789,7 @@
   "lon": -6.26,
   "say": "Dublin in Ireland",
   "fact": "",
-  "reveal": "Dublin, Ireland."
+  "reveal": "We're in Dublin, Ireland."
  },
  {
   "id": "tallinn-ee",
@@ -801,7 +801,7 @@
   "lon": 24.745,
   "say": "Tallinn in Estonia",
   "fact": "",
-  "reveal": "Tallinn, Estonia."
+  "reveal": "We're in Estonia!"
  },
  {
   "id": "helsinki-fi",
@@ -813,7 +813,7 @@
   "lon": 24.938,
   "say": "Helsinki in Finland",
   "fact": "",
-  "reveal": "Helsinki, Finland."
+  "reveal": "We're in Finland!"
  },
  {
   "id": "reykjavik-is",
@@ -825,7 +825,7 @@
   "lon": -21.942,
   "say": "Reykjavík in Iceland",
   "fact": "",
-  "reveal": "Reykjavík, Iceland."
+  "reveal": "We're in Reykjavík, Iceland."
  },
  {
   "id": "marrakesh-ma",
@@ -837,7 +837,7 @@
   "lon": -7.981,
   "say": "Marrakesh in Morocco",
   "fact": "",
-  "reveal": "Marrakesh, Morocco."
+  "reveal": "We're in Marrakesh, Morocco."
  },
  {
   "id": "kyoto-jp",
@@ -849,7 +849,7 @@
   "lon": 135.778,
   "say": "Kyoto in Japan",
   "fact": "",
-  "reveal": "Kyoto, Japan."
+  "reveal": "We're in Kyoto, Japan."
  },
  {
   "id": "biei-jp",
@@ -861,7 +861,7 @@
   "lon": 142.467,
   "say": "Hokkaido in Japan",
   "fact": "",
-  "reveal": "Biei, Japan."
+  "reveal": "We're in Japan!"
  },
  {
   "id": "seoul-kr",
@@ -873,7 +873,7 @@
   "lon": 126.978,
   "say": "Seoul in South Korea",
   "fact": "",
-  "reveal": "Seoul, South Korea."
+  "reveal": "We're in Seoul, South Korea."
  },
  {
   "id": "taipei-tw",
@@ -885,7 +885,7 @@
   "lon": 121.565,
   "say": "Taipei in Taiwan",
   "fact": "",
-  "reveal": "Taipei, Taiwan."
+  "reveal": "We're in Taipei, Taiwan."
  },
  {
   "id": "bangkok-th",
@@ -897,7 +897,7 @@
   "lon": 100.502,
   "say": "Bangkok in Thailand",
   "fact": "",
-  "reveal": "Bangkok, Thailand."
+  "reveal": "We're in Bangkok, Thailand."
  },
  {
   "id": "havana-cu",
@@ -909,7 +909,7 @@
   "lon": -82.359,
   "say": "Havana in Cuba",
   "fact": "",
-  "reveal": "Havana, Cuba."
+  "reveal": "We're in Havana, Cuba."
  },
  {
   "id": "buenosaires-ar",
@@ -921,7 +921,7 @@
   "lon": -58.382,
   "say": "Buenos Aires in Argentina",
   "fact": "",
-  "reveal": "Buenos Aires, Argentina."
+  "reveal": "We're in Buenos Aires, Argentina."
  },
  {
   "id": "santiago-cl",
@@ -933,7 +933,7 @@
   "lon": -70.65,
   "say": "Santiago in Chile",
   "fact": "",
-  "reveal": "Santiago, Chile."
+  "reveal": "We're in Chile!"
  },
  {
   "id": "cusco-pe",
@@ -945,7 +945,7 @@
   "lon": -71.967,
   "say": "Cusco in Peru",
   "fact": "",
-  "reveal": "Cusco, Peru."
+  "reveal": "We're in Peru!"
  },
  {
   "id": "quebec-ca",
@@ -957,7 +957,7 @@
   "lon": -71.208,
   "say": "Québec City in Canada",
   "fact": "",
-  "reveal": "Québec City, Canada."
+  "reveal": "We're in Canada!"
  },
  {
   "id": "vermont-us",
@@ -969,7 +969,7 @@
   "lon": -72.687,
   "say": "Vermont in the USA",
   "fact": "",
-  "reveal": "Stowe, USA."
+  "reveal": "We're in the USA!"
  },
  {
   "id": "mexicocity-mx",
@@ -981,6 +981,6 @@
   "lon": -99.133,
   "say": "Mexico City",
   "fact": "",
-  "reveal": "Mexico City."
+  "reveal": "We're in Mexico City, Mexico."
  }
 ]

@@ -100,10 +100,12 @@ def build_rounds(n, rng, history, demo=False):
                 pano = np.array(Image.open(demo_panos[slot % len(demo_panos)]).convert("RGB"))[:, ::-1].copy()
                 meta = dict(id="demo", creator="demo", lon=loc["lon"], lat=loc["lat"], url="")
             else:
-                from .mapillary import fetch_panorama, NoPanorama
+                from .mapillary import fetch_panorama, NoPanorama, MapillaryTrouble
                 try:
                     pano, meta = fetch_panorama(loc["lon"], loc["lat"], rng, kind=kind,
                                                 place=f"{loc['name']}, {loc['country']}")
+                except MapillaryTrouble as e:
+                    print(f"  {e} - trying another place (not blocked)"); continue
                 except NoPanorama as e:
                     print(f"  {e} - skipping this place for {NO_COVERAGE_DAYS} days")
                     from datetime import date
@@ -135,7 +137,7 @@ def make_caption(rounds):
             f"CC BY-SA 4.0. {links}\nMap data: Natural Earth.\n\n{config.HASHTAGS}")
 
 
-BOT_VERSION = "2026-11-17n (voice check, sound polish, places retried after 21 days)"
+BOT_VERSION = "2026-11-17p (Mapillary map-tile fallback, sky check fixed)"
 
 
 def cmd_render(args):

@@ -1,5 +1,5 @@
 """Find and download a real 360° panorama from Mapillary (images are CC BY-SA 4.0)."""
-import io, random, time
+import gzip, io, math, random, struct, time
 import numpy as np
 import requests
 from PIL import Image
@@ -23,33 +23,236 @@ class MapillaryTrouble(NoPanorama):
 
 
 MAX_HALF = 0.045            # Mapillary allows at most 0.010 square degrees per box (0.09 x 0.09 here)
-_failures = {"in_a_row": 0}
+TILES = "https://tiles.mapillary.com/maps/vtp/mly1_public/2/{z}/{x}/{y}"
+TILE_Z = 14                 # the zoom level whose "image" layer lists every single image
+_state = {"in_a_row": 0, "search_failures": 0, "tiles": {}, "details": {}}
 
 
-def _search(lon, lat, half):
-    """List of panoramas in the box, or None if Mapillary's API failed (not the same as 'nothing there')."""
-    half = min(half, MAX_HALF)
+# ------------------------------------------------------------------ way 1: normal search (fast)
+def _bbox_search(lon, lat, half):
+    """One search request for all panoramas in the box. None = Mapillary's search failed."""
     bbox = f"{lon - half:.5f},{lat - half:.5f},{lon + half:.5f},{lat + half:.5f}"
-    limit = 100
-    for attempt in range(4):
+    for limit in (100, 25):
         try:
             r = requests.get(API, params=dict(access_token=MAPILLARY_TOKEN, fields=FIELDS, bbox=bbox,
                                               is_pano="true", limit=limit), timeout=60)
             if r.status_code == 200:
-                _failures["in_a_row"] = 0
                 return r.json().get("data", [])
-            msg = r.text[:160]
-            print(redact(f"  mapillary HTTP {r.status_code} (limit {limit}): {msg}"))
-            if "reduce the amount" in msg or "unknown error" in msg:
-                limit = max(10, limit // 2)          # busy area: ask for fewer images at once
+            print(redact(f"  mapillary search HTTP {r.status_code} (limit {limit}): {r.text[:120]}"))
         except requests.RequestException as e:
-            print(redact(f"  mapillary error: {e}"))
-        time.sleep(2)
-    _failures["in_a_row"] += 1
-    if _failures["in_a_row"] >= 6:
-        raise RuntimeError("Mapillary API keeps failing (6 searches in a row) - stopping early, "
-                           "the next scheduled run will try again")
+            print(redact(f"  mapillary search error: {e}"))
+        time.sleep(1)
     return None
+
+
+# ------------------------------------------------------------------ way 2: map tiles (robust)
+# Mapillary's coverage tiles are pre-built files on a different server. Their "image" layer lists every
+# image with position and is_pano, so they still work when the search is overloaded in dense places.
+def _varint(b, i):
+    r = sh = 0
+    while True:
+        c = b[i]; i += 1
+        r |= (c & 0x7F) << sh
+        if c < 0x80:
+            return r, i
+        sh += 7
+
+
+def _fields(b):
+    """Minimal protobuf reader: yields (field number, wire type, value)."""
+    i, n = 0, len(b)
+    while i < n:
+        key, i = _varint(b, i)
+        f, wt = key >> 3, key & 7
+        if wt == 0:
+            v, i = _varint(b, i)
+        elif wt == 1:
+            v = b[i:i + 8]; i += 8
+        elif wt == 2:
+            ln, i = _varint(b, i); v = b[i:i + ln]; i += ln
+        elif wt == 5:
+            v = b[i:i + 4]; i += 4
+        else:
+            raise ValueError(f"unsupported protobuf wire type {wt}")
+        yield f, wt, v
+
+
+def _packed(v, wt):
+    if wt != 2:
+        return [v]
+    out, i = [], 0
+    while i < len(v):
+        x, i = _varint(v, i); out.append(x)
+    return out
+
+
+def _zz(n):
+    return (n >> 1) ^ -(n & 1)
+
+
+def _value(b):
+    for f, wt, v in _fields(b):
+        if f == 1: return v.decode("utf-8", "replace")
+        if f == 2: return struct.unpack("<f", v)[0]
+        if f == 3: return struct.unpack("<d", v)[0]
+        if f == 4: return v - (1 << 64) if v >= (1 << 63) else v
+        if f == 5: return v
+        if f == 6: return _zz(v)
+        if f == 7: return bool(v)
+    return None
+
+
+def decode_points(tile, layer_name="image"):
+    """Mapbox vector tile -> [(x, y, extent, properties)] for the point features of one layer."""
+    out = []
+    for f, wt, layer in _fields(tile):
+        if f != 3:
+            continue
+        name, keys, vals, feats, extent = None, [], [], [], 4096
+        for lf, lwt, lv in _fields(layer):
+            if lf == 1: name = lv.decode("utf-8", "replace")
+            elif lf == 2: feats.append(lv)
+            elif lf == 3: keys.append(lv.decode("utf-8", "replace"))
+            elif lf == 4: vals.append(_value(lv))
+            elif lf == 5: extent = lv
+        if name != layer_name:
+            continue
+        for fb in feats:
+            fid, tags, geom, gtype = None, [], [], 0
+            for ff, fwt, fv in _fields(fb):
+                if ff == 1: fid = fv
+                elif ff == 2: tags += _packed(fv, fwt)
+                elif ff == 3: gtype = fv
+                elif ff == 4: geom += _packed(fv, fwt)
+            if gtype != 1 or len(geom) < 3 or (geom[0] & 7) != 1:
+                continue
+            props = {keys[tags[k]]: vals[tags[k + 1]] for k in range(0, len(tags) - 1, 2)
+                     if tags[k] < len(keys) and tags[k + 1] < len(vals)}
+            if props.get("id") is None:
+                props["id"] = fid
+            x = y = 0
+            for k in range(min(geom[0] >> 3, (len(geom) - 1) // 2)):
+                x += _zz(geom[1 + 2 * k]); y += _zz(geom[2 + 2 * k])
+                out.append((x, y, extent, props))
+    return out
+
+
+def _tile_xy(lon, lat, z):
+    n = 2 ** z
+    lat = max(min(lat, 85.0), -85.0)
+    return (lon + 180) / 360 * n, (1 - math.asinh(math.tan(math.radians(lat))) / math.pi) / 2 * n
+
+
+def _tile_lonlat(z, tx, ty, px, py, extent):
+    n = 2 ** z
+    lon = (tx + px / extent) / n * 360 - 180
+    lat = math.degrees(math.atan(math.sinh(math.pi * (1 - 2 * (ty + py / extent) / n))))
+    return lon, lat
+
+
+def _tile(tx, ty):
+    """360° images in one tile as [(lon, lat, props)], [] if the tile is empty, None if it failed."""
+    key = (TILE_Z, tx, ty)
+    if key in _state["tiles"]:
+        return _state["tiles"][key]
+    for attempt in range(2):
+        try:
+            r = requests.get(TILES.format(z=TILE_Z, x=tx, y=ty), params=dict(access_token=MAPILLARY_TOKEN),
+                             timeout=60)
+            if r.status_code in (204, 404):
+                _state["tiles"][key] = []; return []
+            if r.status_code == 200:
+                data = r.content
+                if data[:2] == b"\x1f\x8b":
+                    data = gzip.decompress(data)
+                pts = [(*_tile_lonlat(TILE_Z, tx, ty, px, py, ext), props)
+                       for px, py, ext, props in decode_points(data, "image")
+                       if props.get("is_pano") not in (False, 0)]
+                _state["tiles"][key] = pts
+                return pts
+            print(redact(f"  mapillary tile HTTP {r.status_code}: {r.text[:120]}"))
+        except Exception as e:
+            print(redact(f"  mapillary tile error: {type(e).__name__}: {e}"))
+        time.sleep(1)
+    return None
+
+
+def _details(image_id):
+    """Full metadata for one image (single-image requests are cheap and reliable).
+    Returns dict, False if the image is gone, None on an API error."""
+    if image_id in _state["details"]:
+        return _state["details"][image_id]
+    for attempt in range(2):
+        try:
+            r = requests.get(f"https://graph.mapillary.com/{image_id}",
+                             params=dict(access_token=MAPILLARY_TOKEN, fields=FIELDS), timeout=30)
+            if r.status_code == 200:
+                _state["details"][image_id] = r.json(); return _state["details"][image_id]
+            if r.status_code in (400, 404):
+                return False
+            print(redact(f"  mapillary image HTTP {r.status_code}: {r.text[:120]}"))
+        except requests.RequestException as e:
+            print(redact(f"  mapillary image error: {e}"))
+        time.sleep(1)
+    return None
+
+
+def _tile_search(lon, lat, half, recent=False, want=15, max_lookups=30):
+    x0, y0 = _tile_xy(lon - half, lat + half, TILE_Z)
+    x1, y1 = _tile_xy(lon + half, lat - half, TILE_Z)
+    cx, cy = _tile_xy(lon, lat, TILE_Z)
+    tiles = sorted(((tx, ty) for tx in range(int(x0), int(x1) + 1) for ty in range(int(y0), int(y1) + 1)),
+                   key=lambda t: (t[0] + 0.5 - cx) ** 2 + (t[1] + 0.5 - cy) ** 2)[:4]
+    pts, worked = [], False
+    for tx, ty in tiles:
+        got = _tile(tx, ty)
+        if got is None:
+            continue
+        worked = True
+        pts += [p for p in got if abs(p[0] - lon) <= half and abs(p[1] - lat) <= half]
+    if not worked:
+        return None
+    if recent:
+        pts.sort(key=lambda p: -float(p[2].get("captured_at") or 0))
+    else:
+        pts.sort(key=lambda p: (p[0] - lon) ** 2 + (p[1] - lat) ** 2)
+    good, errors, looked = [], 0, 0
+    for plon, plat, props in pts[:max_lookups]:
+        d = _details(str(props.get("id")))
+        looked += 1
+        if d is None:
+            errors += 1; continue
+        if d and _good(d):
+            good.append(d)
+            if len(good) >= want:
+                break
+    print(f"  map tiles: {len(pts)} panoramas nearby, {len(good)} usable after checking {looked}")
+    if pts and not good and errors == looked:
+        return None
+    return good
+
+
+def _search(lon, lat, half, recent=False):
+    """Panoramas in the box, or None if Mapillary failed (not the same as 'nothing there').
+    Normal search first; after 2 failed searches the rest of the run uses the map tiles directly."""
+    half = min(half, MAX_HALF)
+    found = None
+    if _state["search_failures"] < 2:
+        found = _bbox_search(lon, lat, half)
+        if found is None:
+            _state["search_failures"] += 1
+            if _state["search_failures"] == 2:
+                print("  Mapillary search is overloaded - using map tiles for the rest of this run")
+    if found is None:
+        found = _tile_search(lon, lat, half, recent=recent)
+    if found is None:
+        _state["in_a_row"] += 1
+        if _state["in_a_row"] >= 6:
+            raise RuntimeError("Mapillary keeps failing (search and map tiles, 6 times in a row) - "
+                               "stopping early, the next scheduled run will try again")
+        return None
+    _state["in_a_row"] = 0
+    return found
 
 
 def _good(img_meta):
@@ -132,7 +335,7 @@ def fetch_panorama(lon, lat, rng=None, kind="street", place=None):
     api_failed = 0; searches = 0
     for half in SEARCH.get(kind, SEARCH["street"]):
         searches += 1
-        found = _search(lon, lat, half)
+        found = _search(lon, lat, half, recent=(kind == "street"))
         if found is None:
             api_failed += 1; continue
         cands = [m for m in found if _good(m)]

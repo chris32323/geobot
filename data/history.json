@@ -168,6 +168,19 @@
         "Eiffel Tower, Paris, France",
         "Reine, Lofoten, Norway"
       ]
+    },
+    {
+      "date": "2026-11-17T15:42:36+00:00",
+      "media_id": "17943247542388285",
+      "permalink": "https://www.instagram.com/reel/Df2R2AtoLVH/",
+      "location_ids": [
+        "colosseum-it",
+        "basel-tripoint"
+      ],
+      "places": [
+        "Colosseum, Rome, Italy",
+        "Dreiländereck, Basel, Switzerland / Germany / France"
+      ]
     }
   ],
   "no_coverage": [
@@ -223,6 +236,7 @@
     "baarle-nl",
     "klevan-ua",
     "deathvalley-us",
-    "plitvice-hr"
+    "plitvice-hr",
+    "synevyr-ua"
   ]
 }

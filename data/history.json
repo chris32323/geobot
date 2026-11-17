@@ -142,6 +142,19 @@
         "Golden Gate Bridge, USA",
         "Atlantic Ocean Road, Norway"
       ]
+    },
+    {
+      "date": "2026-11-17T12:14:12+00:00",
+      "media_id": "17953150248055807",
+      "permalink": "https://www.instagram.com/reel/Df15_dnDW1a/",
+      "location_ids": [
+        "timessquare-us",
+        "stelvio-it"
+      ],
+      "places": [
+        "Times Square, New York, USA",
+        "Stelvio Pass, Italy"
+      ]
     }
   ],
   "no_coverage": [

@@ -8,7 +8,7 @@ import numpy as np
 import requests
 from .safety import redact
 from .config import (TTS_ENGINE, PIPER_VOICE, MODELS, OPENAI_VOICE, OPENAI_TTS_MODEL, VOICE_PITCH, VOICE_SPEED,
-                     VOICE_EXPRESSION, VOICE_PAUSE, KOKORO_VOICE, KOKORO_SPEED)
+                     VOICE_EXPRESSION, VOICE_PAUSE, VOICE_STYLE, KOKORO_VOICE, KOKORO_SPEED)
 
 SR = 44100
 
@@ -90,16 +90,15 @@ class Voice:
             wf.setnchannels(1); wf.setsampwidth(2); wf.setframerate(int(sr))
             wf.writeframes(pcm.tobytes())
 
-    STYLE = ("Energetic, friendly male game-show host with a warm, deep voice. "
-             "Natural and confident, clear pace, not rushed. Short and punchy.")
+    STYLE = VOICE_STYLE                                # from the VOICE_STYLE variable; empty = no style at all
 
     REALTIME_VOICES = ("cedar", "marin", "ash", "echo", "verse", "ballad", "alloy", "coral", "sage", "shimmer")
 
     def _voices_for(self, model):
-        if "realtime" in model:                       # onyx does not exist there; cedar = best deep male voice
-            first = self.voice if self.voice in self.REALTIME_VOICES else "cedar"
-            return list(dict.fromkeys([first, "cedar", "ash"]))
-        return list(dict.fromkeys([self.voice, "onyx", "cedar", "ash"]))
+        """Your voice (OPENAI_VOICE) is always tried first, exactly as typed.
+        Only if OpenAI rejects the name for this model does the bot use a deep male backup voice."""
+        backups = ["cedar", "ash"] if "realtime" in model else ["onyx", "cedar", "ash"]
+        return list(dict.fromkeys([self.voice] + backups))
 
     def _probe_openai(self):
         """One tiny test line per model: gpt-realtime -> gpt-audio-1.5 -> (caller falls back to Kokoro).
@@ -112,12 +111,12 @@ class Voice:
                 try:
                     self.voice = voice
                     self._openai_wav("Ready.", self.dir / "probe.wav")
-                    print(f"  voice: OpenAI, {voice} ({model})")
+                    print(f"  voice: OpenAI, {voice} ({model})" + (f", style: {self.STYLE}" if self.STYLE else ", no style"))
                     return True
                 except Exception as e:
                     msg = redact(str(e))
                     if "voice" in msg.lower():
-                        print(f"WARNING: OpenAI voice '{voice}' not available for {model} - trying next")
+                        print(f"WARNING: OpenAI voice '{voice}' does not exist for {model} - using a backup voice")
                         continue
                     print(f"WARNING: OpenAI {model} failed ({msg[:200]})")
                     break
@@ -133,9 +132,9 @@ class Voice:
         if self.model.startswith("gpt-audio"):
             self._verbatim(text, path, lambda: self._chat_audio_once(text, hdr))
             return
-        r = requests.post("https://api.openai.com/v1/audio/speech", headers=hdr,
-                          json=dict(model=self.model, voice=self.voice, input=text, response_format="wav",
-                                    instructions=self.STYLE), timeout=120)
+        body = dict(model=self.model, voice=self.voice, input=text, response_format="wav")
+        if self.STYLE: body["instructions"] = self.STYLE
+        r = requests.post("https://api.openai.com/v1/audio/speech", headers=hdr, json=body, timeout=120)
         if r.status_code >= 400:
             raise RuntimeError(f"OpenAI speech HTTP {r.status_code}: {r.text[:300]}")
         Path(path).write_bytes(r.content)
@@ -144,9 +143,11 @@ class Voice:
     def _words(t):
         return re.findall(r"[a-z0-9']+", t.lower())
 
-    READ_EXACTLY = ("You are a professional voice actor recording a voice-over. Read the user's text aloud EXACTLY "
-                    "as written, word for word. Never answer it, never add or leave out a word, no greeting, "
-                    "no comments. Sound like a real human, not a robot. Style: ")
+    READ_EXACTLY = ("Read the user's text aloud exactly as written, word for word. "
+                    "Do not answer it, do not add or leave out any word.")
+
+    def _instructions(self):
+        return self.READ_EXACTLY + (" Speaking style: " + self.STYLE if self.STYLE else "")
 
     def _verbatim(self, text, path, once):
         """Speaking models can improvise. Compare the transcript with the text and retry up to 2x."""
@@ -171,7 +172,7 @@ class Voice:
         """gpt-audio-1.5 via Chat Completions (plain HTTPS)."""
         r = requests.post("https://api.openai.com/v1/chat/completions", headers=hdr, timeout=120, json=dict(
             model=self.model, modalities=["text", "audio"], audio=dict(voice=self.voice, format="wav"),
-            messages=[{"role": "system", "content": self.READ_EXACTLY + self.STYLE},
+            messages=[{"role": "system", "content": self._instructions()},
                       {"role": "user", "content": text}]))
         if r.status_code >= 400:
             raise RuntimeError(f"OpenAI audio HTTP {r.status_code}: {r.text[:300]}")
@@ -188,7 +189,7 @@ class Voice:
         try:
             ws.send(json.dumps({"type": "session.update", "session": {
                 "type": "realtime", "model": self.model, "output_modalities": ["audio"],
-                "instructions": self.READ_EXACTLY + self.STYLE,
+                "instructions": self._instructions(),
                 "audio": {"output": {"voice": self.voice, "format": {"type": "audio/pcm", "rate": 24000}}}}}))
             ws.send(json.dumps({"type": "conversation.item.create", "item": {
                 "type": "message", "role": "user", "content": [{"type": "input_text", "text": text}]}}))

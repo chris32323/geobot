@@ -3,7 +3,8 @@ import os, re, subprocess, wave
 from pathlib import Path
 import numpy as np
 import requests
-from .config import TTS_ENGINE, PIPER_VOICE, MODELS, OPENAI_VOICE, OPENAI_TTS_MODEL, VOICE_PITCH, VOICE_SPEED, VOICE_EXPRESSION, VOICE_PAUSE
+from .config import (TTS_ENGINE, PIPER_VOICE, MODELS, OPENAI_VOICE, OPENAI_TTS_MODEL, VOICE_PITCH, VOICE_SPEED,
+                     VOICE_EXPRESSION, VOICE_PAUSE, KOKORO_VOICE, KOKORO_SPEED)
 
 SR = 44100
 
@@ -31,12 +32,22 @@ class Voice:
         self.n = 0
         self.engine = TTS_ENGINE
         self._piper = None
+        self._kokoro = None
+        if self.engine == "kokoro":
+            try:
+                from kokoro_onnx import Kokoro
+                self._kokoro = Kokoro(str(MODELS / "kokoro-v1.0.onnx"), str(MODELS / "voices-v1.0.bin"))
+                print(f"  voice: Kokoro, {KOKORO_VOICE}, speed {KOKORO_SPEED}")
+            except Exception as e:
+                print(f"WARNING: Kokoro could not start ({e}) - falling back to Piper")
+                self.engine = "piper"
         if self.engine == "piper":
             from piper import PiperVoice
             model = MODELS / f"{PIPER_VOICE}.onnx"
             if not model.exists():
                 raise FileNotFoundError(f"Piper voice model missing: {model} (run scripts/fetch_assets.sh)")
             self._piper = PiperVoice.load(str(model))
+            print(f"  voice: Piper, {PIPER_VOICE}")
 
     def _piper_wav(self, text, path):
         v = self._piper
@@ -54,6 +65,14 @@ class Voice:
             else:                                              # piper-tts 1.2.x
                 v.synthesize(text, wf, length_scale=VOICE_SPEED, noise_scale=VOICE_EXPRESSION)
 
+    def _kokoro_wav(self, text, path):
+        lang = "en-gb" if KOKORO_VOICE.startswith("b") else "en-us"
+        samples, sr = self._kokoro.create(text, voice=KOKORO_VOICE, speed=KOKORO_SPEED, lang=lang)
+        pcm = (np.clip(np.asarray(samples, np.float32), -1, 1) * 32000).astype(np.int16)
+        with wave.open(str(path), "wb") as wf:
+            wf.setnchannels(1); wf.setsampwidth(2); wf.setframerate(int(sr))
+            wf.writeframes(pcm.tobytes())
+
     def _openai_wav(self, text, path):
         r = requests.post("https://api.openai.com/v1/audio/speech",
                           headers={"Authorization": f"Bearer {os.environ['OPENAI_API_KEY']}"},
@@ -68,6 +87,8 @@ class Voice:
         raw = self.dir / f"line{self.n:02d}.wav"
         if self.engine == "openai":
             self._openai_wav(text, raw)
+        elif self.engine == "kokoro":
+            self._kokoro_wav(text, raw)
         else:
             self._piper_wav(text, raw)
         a = _wav_to_array(raw, pitch=VOICE_PITCH)

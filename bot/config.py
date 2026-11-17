@@ -19,7 +19,9 @@ TITLE_EDITION = os.getenv("TITLE_EDITION", "World Edition")
 HFOV_DEG = 82
 
 # ---- voice (male by default)
-TTS_ENGINE = os.getenv("TTS_ENGINE", "piper")             # piper | openai
+TTS_ENGINE = os.getenv("TTS_ENGINE", "kokoro")            # kokoro (natural, free) | piper | openai
+KOKORO_VOICE = os.getenv("KOKORO_VOICE", "am_michael")    # male: am_michael, am_fenrir, am_puck, am_adam, am_eric, am_liam, am_onyx, bm_george, bm_lewis, bm_daniel, bm_fable
+KOKORO_SPEED = float(os.getenv("KOKORO_SPEED", "0.9"))     # 1.0 = normal, smaller = slower
 PIPER_VOICE = os.getenv("PIPER_VOICE", "en_US-ryan-high")   # male US voice
 OPENAI_VOICE = os.getenv("OPENAI_VOICE", "onyx")            # male voice
 OPENAI_TTS_MODEL = os.getenv("OPENAI_TTS_MODEL", "gpt-4o-mini-tts")

@@ -1,6 +1,7 @@
 """Publish a Reel with the Instagram API (Instagram Login) and refresh the long-lived token."""
 import time
 import requests
+from .safety import redact
 from .config import IG_API, IG_USER_ID, IG_ACCESS_TOKEN
 
 
@@ -12,9 +13,9 @@ def _check(r):
     try:
         j = r.json()
     except ValueError:
-        raise IGError(f"HTTP {r.status_code}: {r.text[:300]}")
+        raise IGError(redact(f"HTTP {r.status_code}: {r.text[:300]}"))
     if r.status_code >= 400 or "error" in j:
-        raise IGError(f"HTTP {r.status_code}: {j.get('error', j)}")
+        raise IGError(redact(f"HTTP {r.status_code}: {j.get('error', j)}"))
     return j
 
 
@@ -28,7 +29,7 @@ def api_for(token):
 def publish_reel(video_url, caption, user_id=IG_USER_ID, token=IG_ACCESS_TOKEN, max_wait_s=900):
     if not (user_id and token):
         raise IGError("IG_USER_ID / IG_ACCESS_TOKEN not set")
-    print(f"  token type: {'Facebook login (EAA...)' if token.startswith('EAA') else 'Instagram login (' + token[:4] + '...)'}, length {len(token)}")
+    print(f"  token type: {'Facebook login' if token.startswith('EAA') else 'Instagram login'}, length {len(token)}")
     IG_API = api_for(token)
     print("  creating reel container ...")
     j = _check(requests.post(f"{IG_API}/{user_id}/media", data=dict(
@@ -52,7 +53,7 @@ def publish_reel(video_url, caption, user_id=IG_USER_ID, token=IG_ACCESS_TOKEN, 
             break
         except IGError as e:
             if attempt == 2: raise
-            print(f"  publish retry ({e})"); time.sleep(30)
+            print(redact(f"  publish retry ({e})")); time.sleep(30)
     mid = p["id"]
     try:
         info = _check(requests.get(f"{IG_API}/{mid}", params=dict(fields="permalink", access_token=token), timeout=60))

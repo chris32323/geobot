@@ -5,6 +5,9 @@ import requests
 from PIL import Image
 from .config import MAPILLARY_TOKEN, MIN_PANO_WIDTH, REQUIRE_ROAD
 from .level import level_panorama
+from .safety import redact
+
+Image.MAX_IMAGE_PIXELS = 120_000_000      # refuse absurdly large images (decompression-bomb guard)
 
 API = "https://graph.mapillary.com/images"
 FIELDS = "id,thumb_original_url,is_pano,width,height,captured_at,computed_geometry,creator"
@@ -22,9 +25,9 @@ def _search(lon, lat, half):
                                               is_pano="true", limit=100), timeout=60)
             if r.status_code == 200:
                 return r.json().get("data", [])
-            print(f"  mapillary HTTP {r.status_code}: {r.text[:200]}")
+            print(redact(f"  mapillary HTTP {r.status_code}: {r.text[:200]}"))
         except requests.RequestException as e:
-            print(f"  mapillary error: {e}")
+            print(redact(f"  mapillary error: {e}"))
         time.sleep(3 * (attempt + 1))
     return []
 
@@ -98,6 +101,7 @@ def fetch_panorama(lon, lat, rng=None, kind="street"):
                     print(f"  {m['id']}: {'no road/sky' if need_road else 'no sky'} detected (indoors?), skipped")
                     continue
                 if ok is None:
+                    print(f"  {m['id']}: no Mapillary detections yet, will check the pixels instead")
                     maybes.append(m); continue
             got = _download(m, lon, lat)
             if got: return got
@@ -113,12 +117,13 @@ def _download(m, lon, lat):
         r.raise_for_status()
         im = Image.open(io.BytesIO(r.content)).convert("RGB")
     except Exception as e:
-        print(f"  download failed ({e}), next")
+        print(redact(f"  download failed ({e}), next"))
         return None
     if im.width > 8192:
         im = im.resize((8192, 4096), Image.LANCZOS)
     arr = np.array(im)
     if arr.std() < 12:                     # blank / broken image
+        print(f"  {m['id']}: image is blank or broken, skipped")
         return None
     if REQUIRE_ROAD and not _sky_visible(arr):
         print(f"  {m['id']}: no open sky at the top (probably indoors), skipped")

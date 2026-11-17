@@ -115,7 +115,7 @@ def make_caption(rounds):
             f"CC BY-SA 4.0. {links}\nMap data: Natural Earth.\n\n{config.HASHTAGS}")
 
 
-BOT_VERSION = "2026-11-17f (We're in ... reveals, Kokoro voice, auto-level, hardened)"
+BOT_VERSION = "2026-11-17g (We're in ... reveals, Kokoro voice, auto-level, hardened, verbose image checks)"
 
 
 def cmd_render(args):

@@ -96,7 +96,7 @@ def build_rounds(n, rng, history, demo=False):
                 place=loc["name"] if loc["country"] in loc["name"] else f"{loc['name']}, {loc['country']}",
                 fact=fact, loc_id=loc["id"], intro=intro_for(slot, n),
                 lines=dict(intro=SAY_INTRO[min(slot, 2)], pan1=SAY_PAN1[min(slot, 2)], reveal=reveal),
-                credit=f"Imagery: Mapillary{' / @' + meta['creator'] if meta.get('creator') else ''} · CC BY-SA 4.0",
+                credit="Imagery: Mapillary · CC BY-SA 4.0",
                 meta=meta))
             break
         else:
@@ -105,7 +105,9 @@ def build_rounds(n, rng, history, demo=False):
 
 
 def make_caption(rounds):
-    creators = sorted({r["meta"].get("creator") for r in rounds if r["meta"].get("creator") and r["meta"]["creator"] != "demo"})
+    from .safety import clean_username
+    creators = sorted({clean_username(r["meta"].get("creator")) for r in rounds
+                       if r["meta"].get("creator") and r["meta"]["creator"] != "demo"} - {""})
     links = " ".join(r["meta"]["url"] for r in rounds if r["meta"].get("url"))
     return (f"Where are we? 🌍 {len(rounds)} rounds – guess before the timer runs out!\n\n"
             f"How many did you get right? Comment your score 👇 New round every day.\n\n"
@@ -113,7 +115,7 @@ def make_caption(rounds):
             f"CC BY-SA 4.0. {links}\nMap data: Natural Earth.\n\n{config.HASHTAGS}")
 
 
-BOT_VERSION = "2026-11-17c (no hints, short reveal, slow voice, auto-level)"
+BOT_VERSION = "2026-11-17f (We're in ... reveals, Kokoro voice, auto-level, hardened)"
 
 
 def cmd_render(args):

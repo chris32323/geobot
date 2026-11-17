@@ -23,8 +23,8 @@ TTS_ENGINE = os.getenv("TTS_ENGINE", "kokoro")            # kokoro (natural, fre
 KOKORO_VOICE = os.getenv("KOKORO_VOICE", "am_michael")    # male: am_michael, am_fenrir, am_puck, am_adam, am_eric, am_liam, am_onyx, bm_george, bm_lewis, bm_daniel, bm_fable
 KOKORO_SPEED = float(os.getenv("KOKORO_SPEED", "0.9"))     # 1.0 = normal, smaller = slower
 PIPER_VOICE = os.getenv("PIPER_VOICE", "en_US-ryan-high")   # male US voice
-OPENAI_VOICE = os.getenv("OPENAI_VOICE", "onyx")            # male voice
-OPENAI_TTS_MODEL = os.getenv("OPENAI_TTS_MODEL", "gpt-4o-mini-tts")
+OPENAI_VOICE = os.getenv("OPENAI_VOICE") or "cedar"          # deep male; realtime: cedar/marin best (onyx only on gpt-audio)
+OPENAI_TTS_MODEL = os.getenv("OPENAI_TTS_MODEL") or "gpt-realtime-2.1"   # most realistic; falls back to gpt-audio-1.5
 REQUIRE_VOICE = os.getenv("REQUIRE_VOICE", "1") == "1"
 VOICE_PITCH = float(os.getenv("VOICE_PITCH", "1.0"))       # 1.0 = original Ryan; < 1 = deeper
 VOICE_SPEED = float(os.getenv("VOICE_SPEED", "1.4"))       # Piper length scale: 1.0 = fast default, 1.4 = slow and clear

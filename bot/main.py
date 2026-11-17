@@ -116,7 +116,7 @@ def make_caption(rounds):
             f"CC BY-SA 4.0. {links}\nMap data: Natural Earth.\n\n{config.HASHTAGS}")
 
 
-BOT_VERSION = "2026-11-17h (AI image check, OpenAI/Kokoro voice, auto-level, hardened)"
+BOT_VERSION = "2026-11-17j (voice never cut off, gpt-realtime-2.1 voice, auto fallback)"
 
 
 def cmd_render(args):
@@ -130,7 +130,7 @@ def cmd_render(args):
     try:
         if args.fake_voice:
             from .render import SR
-            tts = lambda text, mx: (0.15 * np.sin(2 * np.pi * 180 * np.arange(int(min(len(text) * 0.065, mx) * SR)) / SR)).astype(np.float32)
+            tts = lambda text, mx: (0.15 * np.sin(2 * np.pi * 180 * np.arange(int(len(text) * 0.065 * SR)) / SR)).astype(np.float32)
         else:
             from .voice import Voice
             v = Voice(out / "voice"); tts = v.say

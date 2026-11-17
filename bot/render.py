@@ -11,23 +11,17 @@ def font(bold, size):
         _fonts[k] = ImageFont.truetype(FONT_BOLD if bold else FONT_MEDIUM, max(int(size), 1))
     return _fonts[k]
 
-# ------------------------------------------------------------------ timeline (seconds, relative to round start)
-INTRO = 1.0
-T_PAN0, T_PAN1 = 1.0, 6.0
-T_SLIDE1 = 6.5
-T_GUESS0, T_GUESS1 = 6.5, 9.5
-T_PIN, T_CIRCLE, T_CARD = 9.7, 9.95, 10.4
-T_CHIME = T_CARD                       # chime ~0.9 s, the reveal line starts after it
-RD = 17.4
-END = 6.0
-PAN_SECONDS = T_PAN1 - T_PAN0
-GUESS_SECONDS = T_GUESS1 - T_GUESS0
-
-# voice slots: key -> (start, max_len, caption position)
-# voice slots: start, max length, caption position. Chosen so no sound effect plays while he speaks.
-SLOTS = {"intro": (0.25, 0.62, None), "pan1": (1.75, 2.2, "low"), "pan2": (3.95, 1.85, "low"),
-         "guess": (6.6, 2.8, "top"), "reveal": (11.42, 5.8, "top")}
-END_SLOTS = {"end1": (1.15, 3.0, "mid")}
+# ------------------------------------------------------------------ timeline
+# The timeline is built per round from the real length of each spoken line ("Reel._plan"):
+# a phase only ends after the voice has finished, so no sentence is ever cut off.
+# These are the minimum durations (used when the lines are short).
+MIN_INTRO = 1.0            # big "WHERE ARE WE?" title
+MIN_PAN = 5                # 360° pan (whole seconds, one tick per second)
+MIN_GUESS = 3              # map + countdown
+MIN_CARD_HOLD = 5.0        # answer card stays at least this long
+AFTER_SPEECH = 1.0         # breathing room after the last word of a round
+MIN_END = 6.0              # end card "How many did you get?"
+GAP = 0.35                 # silence between two lines in the same phase
 
 PX, PY, PS = 60, 470, 960
 SR = 44100
@@ -130,33 +124,58 @@ class Reel:
 
     def __init__(self, world, rounds, tts=None):
         self.world = world; self.rounds = rounds; self.tts = tts
-        self.total = RD * len(rounds) + END
         for R in rounds:
             R["Ti"] = np.array([float(v) for v in world.to_img(*R["lonlat"])])
             R["bg"] = None
         self.clips = []          # (abs_start, samples)
-        self.caps = []           # (abs_t0, abs_t1, text, pos)
         self.end_lines = {"end1": "How many did you get?"}
-        self._make_voice()
+        self._plan()
 
-    # ---- voice + caption timeline
-    def _add_line(self, abs_start, slot, text):
-        start, max_len, pos = slot
-        dur = max_len
-        if self.tts:
-            a = self.tts(text, max_len)
-            if a is not None:
-                self.clips.append((abs_start, a)); dur = len(a) / SR
-        self.caps.append((abs_start, abs_start + min(max(dur + 0.25, 1.2), max_len + 0.3), text, pos))
+    # ---- voice first, then the timeline is fitted around it
+    def _speak(self, text):
+        if not text or not self.tts: return None
+        a = self.tts(text, None)
+        return a if a is not None and len(a) > 0 else None
 
-    def _make_voice(self):
-        for ri, R in enumerate(self.rounds):
-            for key, slot in SLOTS.items():
-                if R["lines"].get(key):
-                    self._add_line(ri * RD + slot[0], slot, R["lines"][key])
-        b = RD * len(self.rounds)
-        for key, slot in END_SLOTS.items():
-            self._add_line(b + slot[0], slot, self.end_lines[key])
+    def _plan(self):
+        dur = lambda a: len(a) / SR if a is not None else 0.0
+        t0 = 0.0; self.starts = []
+        for R in self.rounds:
+            L = {k: self._speak(R["lines"].get(k)) for k in ("intro", "pan1", "pan2", "guess", "reveal")}
+            v = []                                                   # (time in round, samples)
+            tl = {}
+            if L["intro"] is not None: v.append((0.25, L["intro"]))
+            tl["intro"] = max(MIN_INTRO, 0.25 + dur(L["intro"]) + 0.2)
+            tl["pan0"] = tl["intro"]
+            cur = tl["pan0"] + 0.75
+            for k in ("pan1", "pan2"):
+                if L[k] is not None:
+                    if k == "pan2": cur = max(cur, tl["pan0"] + 2.95)
+                    v.append((cur, L[k])); cur += dur(L[k]) + GAP
+            tl["pan1"] = tl["pan0"] + max(MIN_PAN, math.ceil(cur - tl["pan0"] + 0.3))
+            tl["slide1"] = tl["guess0"] = tl["pan1"] + 0.5
+            g = MIN_GUESS
+            if L["guess"] is not None:
+                v.append((tl["guess0"] + 0.1, L["guess"])); g = max(g, math.ceil(dur(L["guess"]) + 0.4))
+            tl["guess1"] = tl["guess0"] + g
+            tl["pin"] = tl["guess1"] + 0.2; tl["circle"] = tl["pin"] + 0.25; tl["card"] = tl["pin"] + 0.7
+            rev = tl["card"] + 1.02                                  # reveal starts after the chime
+            if L["reveal"] is not None: v.append((rev, L["reveal"]))
+            tl["dur"] = max(rev + MIN_CARD_HOLD, rev + dur(L["reveal"]) + AFTER_SPEECH)
+            R["tl"] = tl
+            self.starts.append(t0)
+            self.clips += [(t0 + t, a) for t, a in v]
+            t0 += tl["dur"]
+        self.rounds_end = t0
+        e = self._speak(self.end_lines["end1"])
+        if e is not None: self.clips.append((t0 + 1.15, e))
+        self.end_dur = max(MIN_END, 1.15 + dur(e) + 2.5)
+        self.total = t0 + self.end_dur
+        # guarantee: no line runs into the next phase / round
+        for (s0, a), nxt in zip(self.clips, self.clips[1:] + [(self.total, None)]):
+            assert s0 + len(a) / SR <= nxt[0] + 1e-6, "voice overlap"
+        print("  timeline: rounds " + ", ".join(f"{R['tl']['dur']:.1f}s" for R in self.rounds)
+              + f", end {self.end_dur:.1f}s, total {self.total:.1f}s")
 
     def _captions(self, d, abs_t):
         return                                   # no subtitle boxes: the voice speaks, the screen stays clean
@@ -199,13 +218,16 @@ class Reel:
 
     # ---- frames
     def frame(self, abs_t):
-        ri = int(abs_t // RD)
-        if ri >= len(self.rounds):
-            return self.end_frame(abs_t - RD * len(self.rounds), abs_t)
-        return self.round_frame(abs_t - ri * RD, ri, abs_t)
+        if abs_t >= self.rounds_end:
+            return self.end_frame(abs_t - self.rounds_end, abs_t)
+        ri = max(i for i, s0 in enumerate(self.starts) if s0 <= abs_t)
+        return self.round_frame(abs_t - self.starts[ri], ri, abs_t)
 
     def round_frame(self, t, ri, abs_t):
-        R = self.rounds[ri]; n = len(self.rounds)
+        R = self.rounds[ri]; n = len(self.rounds); tl = R["tl"]
+        INTRO, T_PAN0, T_PAN1, T_SLIDE1 = tl["intro"], tl["pan0"], tl["pan1"], tl["slide1"]
+        T_GUESS0, T_GUESS1, T_PIN, T_CIRCLE, T_CARD = tl["guess0"], tl["guess1"], tl["pin"], tl["circle"], tl["card"]
+        PAN_SECONDS, GUESS_SECONDS = T_PAN1 - T_PAN0, T_GUESS1 - T_GUESS0
         ov = Image.new("RGBA", (W, H), (0, 0, 0, 0)); d = ImageDraw.Draw(ov)
         pitch = math.radians(3 + 1.5 * math.sin(max(t, T_PAN0) * 1.3))
         if t < INTRO:                                      # static big question, from the very first frame
@@ -272,7 +294,7 @@ class Reel:
 
     def end_frame(self, t, abs_t):
         if not hasattr(self, "_end_bg"):
-            last = self.round_frame(RD - 0.01, len(self.rounds) - 1, -1)
+            last = self.round_frame(self.rounds[-1]["tl"]["dur"] - 0.01, len(self.rounds) - 1, -1)
             self._end_bg = last.filter(ImageFilter.GaussianBlur(14)).convert("RGBA")
         img = self._end_bg.copy(); k = ease_out(t / 0.5)
         ov = Image.new("RGBA", (W, H), (10, 12, 20, int(170 * k))); d = ImageDraw.Draw(ov)
@@ -317,14 +339,15 @@ class Reel:
             else:
                 self.skipped_sfx = getattr(self, "skipped_sfx", 0) + 1
                 self.skipped_at = getattr(self, "skipped_at", []) + [round(t0, 2)]
-        for r in range(len(self.rounds)):
-            b = r * RD
-            sfx(b, pop()); sfx(b + T_PAN0, whoosh())
-            for k in range(int(PAN_SECONDS)): sfx(b + T_PAN0 + k, tick(k >= PAN_SECONDS - 2), 0.8)
-            sfx(b + T_PAN1, whoosh())
-            for k in range(int(GUESS_SECONDS)): sfx(b + T_GUESS0 + k, tick(k >= GUESS_SECONDS - 1), 0.8)
-            sfx(b + T_PIN + 0.2, pop()); sfx(b + T_CHIME, chime())
-        sfx(RD * len(self.rounds) + 0.15, chime())
+        for r, R in enumerate(self.rounds):
+            b = self.starts[r]; tl = R["tl"]
+            pan_s, guess_s = round(tl["pan1"] - tl["pan0"]), round(tl["guess1"] - tl["guess0"])
+            sfx(b, pop()); sfx(b + tl["pan0"], whoosh())
+            for k in range(pan_s): sfx(b + tl["pan0"] + k, tick(k >= pan_s - 2), 0.8)
+            sfx(b + tl["pan1"], whoosh())
+            for k in range(guess_s): sfx(b + tl["guess0"] + k, tick(k >= guess_s - 1), 0.8)
+            sfx(b + tl["pin"] + 0.2, pop()); sfx(b + tl["card"], chime())
+        sfx(self.rounds_end + 0.15, chime())
         voice = np.zeros(N, np.float32)
         for t0, clip in self.clips:
             i = int(t0 * SR); j = min(N, i + len(clip)); voice[i:j] += clip[: j - i]

@@ -1,8 +1,12 @@
-"""AI voice-over (male). Default: Piper (free, runs offline on the GitHub runner). Optional: OpenAI TTS."""
-import os, re, subprocess, wave
+"""AI voice-over (male). Default: Kokoro (free, offline). Optional: OpenAI.
+OpenAI models: gpt-realtime-2.1 (default, most realistic, WebSocket) -> gpt-audio-1.5 (automatic fallback),
+or gpt-4o-mini-tts (cheap, retires 2027-01-06).
+If OpenAI fails for any reason the bot falls back to Kokoro, so a reel is never posted without voice."""
+import base64, difflib, os, re, subprocess, time, wave
 from pathlib import Path
 import numpy as np
 import requests
+from .safety import redact
 from .config import (TTS_ENGINE, PIPER_VOICE, MODELS, OPENAI_VOICE, OPENAI_TTS_MODEL, VOICE_PITCH, VOICE_SPEED,
                      VOICE_EXPRESSION, VOICE_PAUSE, KOKORO_VOICE, KOKORO_SPEED)
 
@@ -38,12 +42,12 @@ class Voice:
                 print("WARNING: TTS_ENGINE=openai but OPENAI_API_KEY is missing - falling back to Kokoro")
                 self.engine = "kokoro"
             else:
-                print(f"  voice: OpenAI, {OPENAI_VOICE} ({OPENAI_TTS_MODEL})")
+                self.voice = OPENAI_VOICE; self.model = OPENAI_TTS_MODEL
+                if not self._probe_openai():
+                    self.engine = "kokoro"
         if self.engine == "kokoro":
             try:
-                from kokoro_onnx import Kokoro
-                self._kokoro = Kokoro(str(MODELS / "kokoro-v1.0.onnx"), str(MODELS / "voices-v1.0.bin"))
-                print(f"  voice: Kokoro, {KOKORO_VOICE}, speed {KOKORO_SPEED}")
+                self._start_kokoro()
             except Exception as e:
                 print(f"WARNING: Kokoro could not start ({e}) - falling back to Piper")
                 self.engine = "piper"
@@ -54,6 +58,13 @@ class Voice:
                 raise FileNotFoundError(f"Piper voice model missing: {model} (run scripts/fetch_assets.sh)")
             self._piper = PiperVoice.load(str(model))
             print(f"  voice: Piper, {PIPER_VOICE}")
+
+    def _start_kokoro(self):
+        if self._kokoro is None:
+            from kokoro_onnx import Kokoro
+            self._kokoro = Kokoro(str(MODELS / "kokoro-v1.0.onnx"), str(MODELS / "voices-v1.0.bin"))
+            print(f"  voice: Kokoro, {KOKORO_VOICE}, speed {KOKORO_SPEED}")
+        self.engine = "kokoro"
 
     def _piper_wav(self, text, path):
         v = self._piper
@@ -79,20 +90,147 @@ class Voice:
             wf.setnchannels(1); wf.setsampwidth(2); wf.setframerate(int(sr))
             wf.writeframes(pcm.tobytes())
 
+    STYLE = ("Energetic, friendly male game-show host with a warm, deep voice. "
+             "Natural and confident, clear pace, not rushed. Short and punchy.")
+
+    REALTIME_VOICES = ("cedar", "marin", "ash", "echo", "verse", "ballad", "alloy", "coral", "sage", "shimmer")
+
+    def _voices_for(self, model):
+        if "realtime" in model:                       # onyx does not exist there; cedar = best deep male voice
+            first = self.voice if self.voice in self.REALTIME_VOICES else "cedar"
+            return list(dict.fromkeys([first, "cedar", "ash"]))
+        return list(dict.fromkeys([self.voice, "onyx", "cedar", "ash"]))
+
+    def _probe_openai(self):
+        """One tiny test line per model: gpt-realtime -> gpt-audio-1.5 -> (caller falls back to Kokoro).
+        A wrong voice name just tries the next deep male voice."""
+        wanted = self.voice
+        models = list(dict.fromkeys([self.model] + (["gpt-audio-1.5"] if "realtime" in self.model else [])))
+        for model in models:
+            self.model = model; self.voice = wanted
+            for voice in self._voices_for(model):
+                try:
+                    self.voice = voice
+                    self._openai_wav("Ready.", self.dir / "probe.wav")
+                    print(f"  voice: OpenAI, {voice} ({model})")
+                    return True
+                except Exception as e:
+                    msg = redact(str(e))
+                    if "voice" in msg.lower():
+                        print(f"WARNING: OpenAI voice '{voice}' not available for {model} - trying next")
+                        continue
+                    print(f"WARNING: OpenAI {model} failed ({msg[:200]})")
+                    break
+        print("WARNING: no OpenAI voice available - falling back to Kokoro")
+        return False
+
     def _openai_wav(self, text, path):
-        r = requests.post("https://api.openai.com/v1/audio/speech",
-                          headers={"Authorization": f"Bearer {os.environ['OPENAI_API_KEY']}"},
-                          json=dict(model=OPENAI_TTS_MODEL, voice=OPENAI_VOICE, input=text, response_format="wav",
-                                    instructions="Energetic, friendly male game-show host. Short and punchy."),
-                          timeout=120)
-        r.raise_for_status()
+        key = os.environ["OPENAI_API_KEY"].strip()
+        hdr = {"Authorization": f"Bearer {key}"}
+        if "realtime" in self.model:
+            self._verbatim(text, path, lambda: self._realtime_once(text, key))
+            return
+        if self.model.startswith("gpt-audio"):
+            self._verbatim(text, path, lambda: self._chat_audio_once(text, hdr))
+            return
+        r = requests.post("https://api.openai.com/v1/audio/speech", headers=hdr,
+                          json=dict(model=self.model, voice=self.voice, input=text, response_format="wav",
+                                    instructions=self.STYLE), timeout=120)
+        if r.status_code >= 400:
+            raise RuntimeError(f"OpenAI speech HTTP {r.status_code}: {r.text[:300]}")
         Path(path).write_bytes(r.content)
+
+    @staticmethod
+    def _words(t):
+        return re.findall(r"[a-z0-9']+", t.lower())
+
+    READ_EXACTLY = ("You are a professional voice actor recording a voice-over. Read the user's text aloud EXACTLY "
+                    "as written, word for word. Never answer it, never add or leave out a word, no greeting, "
+                    "no comments. Sound like a real human, not a robot. Style: ")
+
+    def _verbatim(self, text, path, once):
+        """Speaking models can improvise. Compare the transcript with the text and retry up to 2x."""
+        best = None
+        for attempt in range(3):
+            pcm_or_wav, transcript = once()
+            score = difflib.SequenceMatcher(None, self._words(text), self._words(transcript)).ratio()
+            if best is None or score > best[0]:
+                best = (score, pcm_or_wav)
+            if score >= 0.9:
+                break
+            print(f"  voice: retry ({score:.2f} match) for: {text}")
+        data = best[1]
+        if isinstance(data, tuple):                      # raw PCM16 from the realtime API -> wav
+            pcm, rate = data
+            with wave.open(str(path), "wb") as wf:
+                wf.setnchannels(1); wf.setsampwidth(2); wf.setframerate(rate); wf.writeframes(pcm)
+        else:
+            Path(path).write_bytes(data)
+
+    def _chat_audio_once(self, text, hdr):
+        """gpt-audio-1.5 via Chat Completions (plain HTTPS)."""
+        r = requests.post("https://api.openai.com/v1/chat/completions", headers=hdr, timeout=120, json=dict(
+            model=self.model, modalities=["text", "audio"], audio=dict(voice=self.voice, format="wav"),
+            messages=[{"role": "system", "content": self.READ_EXACTLY + self.STYLE},
+                      {"role": "user", "content": text}]))
+        if r.status_code >= 400:
+            raise RuntimeError(f"OpenAI audio HTTP {r.status_code}: {r.text[:300]}")
+        audio = r.json()["choices"][0]["message"].get("audio") or {}
+        if not audio.get("data"):
+            raise RuntimeError("OpenAI audio: no audio in response")
+        return base64.b64decode(audio["data"]), audio.get("transcript", "")
+
+    def _realtime_once(self, text, key):
+        """gpt-realtime-2.1 via WebSocket: one short session per line, text in -> 24 kHz PCM16 out."""
+        import json, websocket                              # pip: websocket-client
+        ws = websocket.create_connection(f"wss://api.openai.com/v1/realtime?model={self.model}",
+                                         header=[f"Authorization: Bearer {key}"], timeout=60)
+        try:
+            ws.send(json.dumps({"type": "session.update", "session": {
+                "type": "realtime", "model": self.model, "output_modalities": ["audio"],
+                "instructions": self.READ_EXACTLY + self.STYLE,
+                "audio": {"output": {"voice": self.voice, "format": {"type": "audio/pcm", "rate": 24000}}}}}))
+            ws.send(json.dumps({"type": "conversation.item.create", "item": {
+                "type": "message", "role": "user", "content": [{"type": "input_text", "text": text}]}}))
+            ws.send(json.dumps({"type": "response.create"}))
+            pcm, transcript = bytearray(), []
+            deadline = time.time() + 90
+            while time.time() < deadline:
+                ev = json.loads(ws.recv()); t = ev.get("type", "")
+                if t == "error":
+                    raise RuntimeError(f"OpenAI realtime error: {json.dumps(ev.get('error', ev))[:300]}")
+                if t in ("response.output_audio.delta", "response.audio.delta"):
+                    pcm += base64.b64decode(ev["delta"])
+                elif t in ("response.output_audio_transcript.delta", "response.audio_transcript.delta"):
+                    transcript.append(ev.get("delta", ""))
+                elif t == "response.done":
+                    st = (ev.get("response") or {}).get("status")
+                    if st not in (None, "completed"):
+                        raise RuntimeError(f"OpenAI realtime response {st}: "
+                                           f"{json.dumps((ev.get('response') or {}).get('status_details'))[:300]}")
+                    break
+            else:
+                raise RuntimeError("OpenAI realtime: timeout")
+        finally:
+            ws.close()
+        if not pcm:
+            raise RuntimeError("OpenAI realtime: no audio")
+        return (bytes(pcm), 24000), "".join(transcript)
 
     def _one(self, text):
         self.n += 1
         raw = self.dir / f"line{self.n:02d}.wav"
         if self.engine == "openai":
-            self._openai_wav(text, raw)
+            try:
+                self._openai_wav(text, raw)
+            except Exception as e:
+                time.sleep(3)
+                try:
+                    self._openai_wav(text, raw)
+                except Exception as e2:
+                    print(f"WARNING: OpenAI voice failed mid-run ({redact(str(e2))[:200]}) - switching to Kokoro")
+                    self._start_kokoro()
+                    self._kokoro_wav(text, raw)
         elif self.engine == "kokoro":
             self._kokoro_wav(text, raw)
         else:

@@ -194,10 +194,25 @@
         "Taj Mahal, Agra, India",
         "Transfăgărășan, Romania"
       ]
+    },
+    {
+      "date": "2026-11-17T23:22:27+00:00",
+      "media_id": "17989761816096350",
+      "permalink": "https://www.instagram.com/reel/Df3Gdwdj6v7/",
+      "location_ids": [
+        "operahouse-au",
+        "plitvice-hr"
+      ],
+      "places": [
+        "Sydney Opera House, Australia",
+        "Plitvice Lakes, Croatia"
+      ]
     }
   ],
   "no_coverage": {
     "monumentvalley-us": "2026-11-17",
-    "spaceneedle-us": "2026-11-17"
+    "spaceneedle-us": "2026-11-17",
+    "bixby-us": "2026-11-17",
+    "klevan-ua": "2026-11-17"
   }
 }

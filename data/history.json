@@ -220,12 +220,26 @@
         "Table Mountain, Cape Town, South Africa",
         "Marrakesh, Morocco"
       ]
+    },
+    {
+      "date": "2026-11-17T23:43:26+00:00",
+      "media_id": "18146858107514945",
+      "permalink": "https://www.instagram.com/reel/Df3I3CgDLPa/",
+      "location_ids": [
+        "brandenburg-de",
+        "kyoto-jp"
+      ],
+      "places": [
+        "Brandenburg Gate, Berlin, Germany",
+        "Kyoto, Japan"
+      ]
     }
   ],
   "no_coverage": {
     "monumentvalley-us": "2026-11-17",
     "spaceneedle-us": "2026-11-17",
     "bixby-us": "2026-11-17",
-    "klevan-ua": "2026-11-17"
+    "klevan-ua": "2026-11-17",
+    "christ-br": "2026-11-17"
   }
 }

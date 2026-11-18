@@ -246,6 +246,19 @@
         "Olympiapark, Munich, Germany",
         "Porto, Portugal"
       ]
+    },
+    {
+      "date": "2026-11-18T19:05:39+00:00",
+      "media_id": "18649344274031070",
+      "permalink": "https://www.instagram.com/reel/Df5N3aBnIV4/",
+      "location_ids": [
+        "towerbridge-uk",
+        "niagara-ca"
+      ],
+      "places": [
+        "Tower Bridge, London, United Kingdom",
+        "Niagara Falls, Canada / USA"
+      ]
     }
   ],
   "no_coverage": {
@@ -253,6 +266,13 @@
     "spaceneedle-us": "2026-11-17",
     "bixby-us": "2026-11-17",
     "klevan-ua": "2026-11-17",
-    "christ-br": "2026-11-17"
+    "christ-br": "2026-11-17",
+    "sagrada-es": "2026-11-18",
+    "baarle-nl": "2026-11-18",
+    "uluru-au": "2026-11-18",
+    "giau-it": "2026-11-18",
+    "merzouga-ma": "2026-11-18",
+    "neuschwanstein-de": "2026-11-18",
+    "apostles-au": "2026-11-18"
   }
 }

@@ -9,6 +9,10 @@ on:
         description: "Only render + upload the video, do NOT post to Instagram"
         type: boolean
         default: true
+      prepare_voices:
+        description: "One-time: record ALL voice lines into data/voice/ (about 0.5 USD, then the voice is free)"
+        type: boolean
+        default: false
 
 permissions:
   contents: write                 # create releases (video hosting) + commit history.json
@@ -47,12 +51,44 @@ jobs:
           PIPER_VOICE: ${{ vars.PIPER_VOICE || 'en_US-ryan-high' }}
         run: bash scripts/fetch_assets.sh
 
+      - name: Record all voice lines (one-time, only if prepare_voices is ticked)
+        if: github.event_name == 'workflow_dispatch' && inputs.prepare_voices == true
+        env:
+          MAPILLARY_TOKEN: ${{ secrets.MAPILLARY_TOKEN }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          TTS_ENGINE: ${{ vars.TTS_ENGINE || 'openai' }}
+          OPENAI_VOICE: ${{ vars.OPENAI_VOICE || 'alloy' }}
+          VOICE_STYLE: ${{ vars.VOICE_STYLE }}
+          VOICE_AI_CHECK: ${{ vars.VOICE_AI_CHECK }}
+          VOICE_QA_TRIES: ${{ vars.VOICE_QA_TRIES }}
+          VOICE_MAX_PITCH_HZ: ${{ vars.VOICE_MAX_PITCH_HZ }}
+          VOICE_MAX_JUMPS: ${{ vars.VOICE_MAX_JUMPS }}
+          VOICE_MAX_SWING: ${{ vars.VOICE_MAX_SWING }}
+          AUDIO_FX: ${{ vars.AUDIO_FX }}
+          AUDIO_WARMTH: ${{ vars.AUDIO_WARMTH }}
+          AUDIO_REVERB: ${{ vars.AUDIO_REVERB }}
+          AUDIO_DEESSER: ${{ vars.AUDIO_DEESSER }}
+          OPENAI_SPEED: ${{ vars.OPENAI_SPEED }}
+          OPENAI_TTS_MODEL: ${{ vars.OPENAI_TTS_MODEL || 'gpt-realtime-2.1' }}
+          VISION_MODEL: ${{ vars.VISION_MODEL || 'gpt-5-mini' }}
+          VISION_CHECK: ${{ vars.VISION_CHECK || '1' }}
+          KOKORO_VOICE: ${{ vars.KOKORO_VOICE || 'am_michael' }}
+          KOKORO_SPEED: ${{ vars.KOKORO_SPEED || '0.9' }}
+          PIPER_VOICE: ${{ vars.PIPER_VOICE || 'en_US-ryan-high' }}
+          ROUNDS_PER_REEL: ${{ vars.ROUNDS_PER_REEL || '2' }}
+          VOICE_PITCH: ${{ vars.VOICE_PITCH || '1.0' }}
+          VOICE_SPEED: ${{ vars.VOICE_SPEED || '1.4' }}
+          REQUIRE_ROAD: ${{ vars.REQUIRE_ROAD || '1' }}
+          RADIUS_KM: ${{ vars.RADIUS_KM || '2000' }}
+          TITLE_EDITION: ${{ vars.TITLE_EDITION || 'World Edition' }}
+        run: python -m bot.main voices --out out
+
       - name: Render reel (real Mapillary panoramas + AI voice)
         env:
           MAPILLARY_TOKEN: ${{ secrets.MAPILLARY_TOKEN }}
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           TTS_ENGINE: ${{ vars.TTS_ENGINE || 'openai' }}
-          OPENAI_VOICE: ${{ vars.OPENAI_VOICE || 'cedar' }}
+          OPENAI_VOICE: ${{ vars.OPENAI_VOICE || 'alloy' }}
           VOICE_STYLE: ${{ vars.VOICE_STYLE }}
           VOICE_AI_CHECK: ${{ vars.VOICE_AI_CHECK }}
           VOICE_QA_TRIES: ${{ vars.VOICE_QA_TRIES }}
@@ -100,7 +136,8 @@ jobs:
           git config user.name "geobot"
           git config user.email "geobot@users.noreply.github.com"
           git add data/history.json
-          git commit -m "history: $(date -u +%F)" || echo "nothing to commit"
+          git add data/voice 2>/dev/null || true
+          git commit -m "history + voice cache: $(date -u +%F)" || echo "nothing to commit"
           git push || true
 
       - name: Delete old video releases (keep last 10)

@@ -285,6 +285,19 @@
         "Grand Canyon, USA",
         "Havana, Cuba"
       ]
+    },
+    {
+      "date": "2026-11-18T21:41:53+00:00",
+      "media_id": "18188665009423567",
+      "permalink": "https://www.instagram.com/reel/Df5fv2yAKzB/",
+      "location_ids": [
+        "deathvalley-us",
+        "vaals-tripoint"
+      ],
+      "places": [
+        "Death Valley, USA",
+        "Three-country point, Vaals, Netherlands / Belgium / Germany"
+      ]
     }
   ],
   "no_coverage": {
@@ -301,6 +314,12 @@
     "neuschwanstein-de": "2026-11-18",
     "apostles-au": "2026-11-18",
     "stonehenge-uk": "2026-11-18",
-    "moher-ie": "2026-11-18"
+    "moher-ie": "2026-11-18",
+    "furka-ch": "2026-11-18",
+    "trollstigen-no": "2026-11-18",
+    "pukaki-nz": "2026-11-18",
+    "icefields-ca": "2026-11-18",
+    "glencoe-uk": "2026-11-18",
+    "synevyr-ua": "2026-11-18"
   }
 }

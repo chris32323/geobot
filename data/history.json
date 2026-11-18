@@ -272,6 +272,19 @@
         "Leaning Tower, Pisa, Italy",
         "Tallinn, Estonia"
       ]
+    },
+    {
+      "date": "2026-11-18T20:52:50+00:00",
+      "media_id": "18035760002856747",
+      "permalink": "https://www.instagram.com/reel/Df5aIjslAFm/",
+      "location_ids": [
+        "grandcanyon-us",
+        "havana-cu"
+      ],
+      "places": [
+        "Grand Canyon, USA",
+        "Havana, Cuba"
+      ]
     }
   ],
   "no_coverage": {
@@ -286,6 +299,8 @@
     "giau-it": "2026-11-18",
     "merzouga-ma": "2026-11-18",
     "neuschwanstein-de": "2026-11-18",
-    "apostles-au": "2026-11-18"
+    "apostles-au": "2026-11-18",
+    "stonehenge-uk": "2026-11-18",
+    "moher-ie": "2026-11-18"
   }
 }

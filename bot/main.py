@@ -144,7 +144,7 @@ def make_caption(rounds):
             f"CC BY-SA 4.0. {links}\nMap data: Natural Earth.\n\n{config.HASHTAGS}")
 
 
-BOT_VERSION = "2026-11-18b (voice cache, alloy, new lines)"
+BOT_VERSION = "2026-11-18d (OpenAI design run, new design, voice cache)"
 
 
 def cmd_render(args):
@@ -199,6 +199,18 @@ def cmd_refresh(_):
     print(tok)
 
 
+def cmd_design(args):
+    """One-time: let OpenAI review the real frames and improve the design values (saved to data/design.json)."""
+    print(f"geobot version {BOT_VERSION}")
+    rng = random.Random(int(dt.datetime.now(dt.timezone.utc).strftime("%Y%m%d")) + 7)
+    history = load_json(HISTORY, {"posted": [], "no_coverage": {}})     # read only, not saved
+    rounds = build_rounds(config.ROUNDS_PER_REEL, rng, history, demo=args.demo)
+    from .worldmap import WorldMap
+    from . import designer
+    print("rendering world map ..."); world = WorldMap()
+    designer.run(world, rounds, args.out)
+
+
 def cmd_voices(args):
     """One-time: record every sentence the bot can ever say into data/voice/ (then the voice is free)."""
     print(f"geobot version {BOT_VERSION}")
@@ -226,8 +238,10 @@ def main(argv=None):
     p = sub.add_parser("publish"); p.add_argument("--out", default="out"); p.add_argument("--video-url", required=True)
     sub.add_parser("refresh-token")
     vo = sub.add_parser("voices"); vo.add_argument("--out", default="out")
+    de = sub.add_parser("design"); de.add_argument("--out", default="out"); de.add_argument("--demo", action="store_true")
     a = ap.parse_args(argv)
-    {"render": cmd_render, "publish": cmd_publish, "refresh-token": cmd_refresh, "voices": cmd_voices}[a.cmd](a)
+    {"render": cmd_render, "publish": cmd_publish, "refresh-token": cmd_refresh, "voices": cmd_voices,
+     "design": cmd_design}[a.cmd](a)
 
 
 if __name__ == "__main__":

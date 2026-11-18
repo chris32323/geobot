@@ -3,6 +3,7 @@ import math, subprocess, wave
 import numpy as np, cv2
 from PIL import Image, ImageDraw, ImageFont, ImageFilter
 from .config import W, H, FPS, FONT_BOLD, FONT_MEDIUM, RADIUS_KM, HFOV_DEG
+from . import design as D
 
 _fonts = {}
 def font(bold, size):
@@ -106,15 +107,17 @@ def caption(d, text, pos, t, t0, t1):
         d.text((W / 2 - d.textlength(l, font=f) / 2 + 30, y0 + 14 + i * lh), l, font=f, fill=(15, 18, 28, int(255 * a)))
 
 _mask = Image.new("L", (PS, PS), 0); ImageDraw.Draw(_mask).rounded_rectangle([0, 0, PS - 1, PS - 1], radius=36, fill=255)
-_shadow = Image.new("RGBA", (PS + 40, PS + 40), (0, 0, 0, 0))
-ImageDraw.Draw(_shadow).rounded_rectangle([20, 26, PS + 20, PS + 26], radius=40, fill=(0, 0, 0, 120))
-_shadow = _shadow.filter(ImageFilter.GaussianBlur(12))
-_border = Image.new("RGBA", (PS + 12, PS + 12), (0, 0, 0, 0))
-ImageDraw.Draw(_border).rounded_rectangle([0, 0, PS + 11, PS + 11], radius=42, fill=(255, 255, 255, 255))
+_shadow = Image.new("RGBA", (PS + 120, PS + 120), (0, 0, 0, 0))
+ImageDraw.Draw(_shadow).rounded_rectangle([60, 74, PS + 60, PS + 74], radius=44, fill=(0, 0, 0, 150))
+_shadow = _shadow.filter(ImageFilter.GaussianBlur(28))
+_border = Image.new("RGBA", (PS + 8, PS + 8), (0, 0, 0, 0))
+ImageDraw.Draw(_border).rounded_rectangle([0, 0, PS + 7, PS + 7], radius=40, fill=(255, 255, 255, 255))
 
 def paste_panel(base, pim, y):
-    base.alpha_composite(_shadow, (PX - 20, int(y) - 20))
-    base.alpha_composite(_border, (PX - 6, int(y) - 6))
+    base.alpha_composite(_shadow, (PX - 60, int(y) - 60))
+    b = _border if D.T["map_border_alpha"] >= 255 else _border.copy()
+    if b is not _border: b.putalpha(b.getchannel("A").point(lambda v: v * D.T["map_border_alpha"] // 255))
+    base.alpha_composite(b, (PX - 4, int(y) - 4))
     base.paste(pim, (PX, int(y)), _mask)
 
 # ------------------------------------------------------------------ reel renderer
@@ -229,30 +232,35 @@ class Reel:
         INTRO, T_PAN0, T_PAN1, T_SLIDE1 = tl["intro"], tl["pan0"], tl["pan1"], tl["slide1"]
         T_GUESS0, T_GUESS1, T_PIN, T_CIRCLE, T_CARD = tl["guess0"], tl["guess1"], tl["pin"], tl["circle"], tl["card"]
         PAN_SECONDS, GUESS_SECONDS = T_PAN1 - T_PAN0, T_GUESS1 - T_GUESS0
-        ov = Image.new("RGBA", (W, H), (0, 0, 0, 0)); d = ImageDraw.Draw(ov)
         pitch = math.radians(3 + 1.5 * math.sin(max(t, T_PAN0) * 1.3))
-        if t < INTRO:                                      # static big question, from the very first frame
-            out = Image.fromarray((view(R["pano"], 0.0, pitch) * 0.5).astype(np.uint8)).convert("RGBA")
+        if not hasattr(self, "_vig"):
+            self._vig = D.vignette(W, H)
+        if t < INTRO:                                      # big question, fully visible from the very first frame
+            out = Image.fromarray((view(R["pano"], 0.0, pitch) * D.T["intro_dim"]).astype(np.uint8)).convert("RGBA")
+            out.alpha_composite(self._vig)
             small, big, sub = R["intro"]
-            f = font(True, 44); d.text((W / 2 - d.textlength(small, font=f) / 2, 860), small, font=f,
-                                       fill=(255, 210, 60), stroke_width=4, stroke_fill=(15, 18, 28))
-            size = 150
-            while d.textlength(big, font=font(True, size)) > W - 80: size -= 4
-            f = font(True, size)
-            d.text((W / 2 - d.textlength(big, font=f) / 2, 925), big, font=f, fill=(255, 255, 255),
-                   stroke_width=9, stroke_fill=(15, 18, 28))
-            f = font(False, 40)
-            d.text((W / 2 - d.textlength(sub, font=f) / 2, 945 + size * 1.25), sub, font=f, fill=(255, 255, 255),
-                   stroke_width=4, stroke_fill=(15, 18, 28))
-            round_label(d, ri + 1, n)
-            out.alpha_composite(ov); return out.convert("RGB")
+            d = ImageDraw.Draw(out)
+            size = D.T["title_size"]
+            while d.textlength(big, font=D.font(True, size)) > W - 90: size -= 4
+            fb = D.font(True, size)
+            y_big = D.T["title_y"] - size * 0.62
+            if D.T["show_edition_chip"]:
+                D.glass_pill(out, W / 2, y_big - 120, sub.upper(), D.font(True, 30), fg=D.ACC, track=7, dot=D.ACC)
+            D.soft_text(out, W / 2, y_big, big, fb)
+            d = ImageDraw.Draw(out)
+            if D.T["show_title_underline"]:
+                uy = y_big + size * 1.42
+                d.rounded_rectangle([W / 2 - 70, uy, W / 2 + 70, uy + 10], radius=5, fill=D.ACC)
+            D.round_hud(out, ri + 1, n, W)
+            return out.convert("RGB")
         if t < T_PAN1:                                     # 360° pan
             yaw = 2 * math.pi * ease_io((t - T_PAN0) / PAN_SECONDS)
             out = Image.fromarray(view(R["pano"], yaw, pitch)).convert("RGBA")
-            timer(d, W / 2, 270, PAN_SECONDS - (t - T_PAN0), PAN_SECONDS, (t - T_PAN0) % 1)
-            pill(d, (W / 2, 1760), "360°  ·  look around", font(False, 32), fill=(255, 255, 255, 60))
-            self._captions(d, abs_t); round_label(d, ri + 1, n)
-            out.alpha_composite(ov); return out.convert("RGB")
+            out.alpha_composite(self._vig)
+            D.timer(out, W / 2, D.T["timer_y"], PAN_SECONDS - (t - T_PAN0), PAN_SECONDS, (t - T_PAN0) % 1)
+            D.glass_pill(out, W / 2, 1720, "360°  ·  LOOK AROUND", D.font(True, 28), track=4)
+            D.round_hud(out, ri + 1, n, W)
+            return out.convert("RGB")
         # ---- map phase
         k_in = ease_out((t - T_PAN1) / (T_SLIDE1 - T_PAN1))
         if t < T_SLIDE1:
@@ -260,56 +268,41 @@ class Reel:
             out = Image.blend(fr, self._bg(R), k_in)
         else:
             out = self._bg(R).copy()
+        out.alpha_composite(self._vig)
         wm = self.world; lat = R["lonlat"][1]
         pim, to_p, s = self.map_panel(np.array([wm.W / 2, wm.H / 2]), float(wm.W), lat)   # always the whole world
-        pd = ImageDraw.Draw(pim); tx, ty = to_p(R["Ti"]); red = (235, 52, 72)
+        pd = ImageDraw.Draw(pim); tx, ty = to_p(R["Ti"]); red = D.RED
         if t >= T_CIRCLE:
             k = ease_out((t - T_CIRCLE) / 0.6); rr = RADIUS_KM / wm.km_per_px(lat) * s * k
             layer = Image.new("RGBA", (PS, PS), (0, 0, 0, 0)); ld = ImageDraw.Draw(layer)
-            ld.ellipse([tx - rr, ty - rr, tx + rr, ty + rr], fill=red + (45,), outline=red + (220,), width=5)
+            ld.ellipse([tx - rr, ty - rr, tx + rr, ty + rr], fill=red + (50,), outline=red + (230,), width=5)
             pim.alpha_composite(layer)
-            if k > 0.95: pill(pd, (tx, ty + rr + 14), f"{RADIUS_KM} km", font(True, 26), fill=red + (235,))
+            if k > 0.95:
+                lf = D.font(True, 26); lab = f"{RADIUS_KM} km"; lw = pd.textlength(lab, font=lf)
+                by = min(ty + rr + 12, PS - 52)
+                pd.rounded_rectangle([tx - lw / 2 - 18, by, tx + lw / 2 + 18, by + 42], radius=21, fill=red + (240,))
+                pd.text((tx - lw / 2, by + 3), lab, font=lf, fill=(255, 255, 255))
         if t >= T_PIN:
-            pin(pd, tx, ty - 260 * (1 - bounce_drop((t - T_PIN) / 0.35)), red)
+            land = bounce_drop((t - T_PIN) / 0.35)
+            D.pin(pd, tx, ty - 260 * (1 - land), red, pulse_t=(t - T_PIN - 0.35) if land >= 0.999 else None)
         paste_panel(out, pim, PY + (H - PY) * (1 - k_in))
         if T_GUESS0 <= t < T_GUESS1:
-            timer(d, W / 2, 270, T_GUESS1 - t, GUESS_SECONDS, (t - T_GUESS0) % 1)
-            pill(d, (W / 2, 1500), "Lock in your guess!", font(True, 48), fill=(15, 18, 28, 210))
+            D.timer(out, W / 2, D.T["timer_y"], T_GUESS1 - t, GUESS_SECONDS, (t - T_GUESS0) % 1)
+            D.glass_pill(out, W / 2, 1500, "LOCK IN YOUR GUESS", D.font(True, 36), track=4, dot=D.AMBER)
         if t >= T_CARD:
-            k = ease_back((t - T_CARD) / 0.35); bw, bh = 900 * k, 250 * k
-            d.rounded_rectangle([W / 2 - bw / 2, 1620 - bh / 2, W / 2 + bw / 2, 1620 + bh / 2], radius=40 * k,
-                                fill=(255, 255, 255, 248))
-            if k > 0.6:
-                f0 = font(False, 32); d.text((W / 2 - d.textlength("THE ANSWER", font=f0) / 2, 1515), "THE ANSWER", font=f0, fill=red)
-                size = 66
-                while d.textlength(R["place"], font=font(True, size)) > 840: size -= 2
-                f1 = font(True, size); d.text((W / 2 - d.textlength(R["place"], font=f1) / 2, 1555 + (66 - size) / 2),
-                                              R["place"], font=f1, fill=(15, 18, 28))
-                lo, la = R["lonlat"]
-                sub = R.get("fact") or f"{abs(la):.2f}°{'N' if la >= 0 else 'S'}, {abs(lo):.2f}°{'E' if lo >= 0 else 'W'}"
-                fs = 32
-                while d.textlength(sub, font=font(False, fs)) > 840 and fs > 20: fs -= 1
-                f2 = font(False, fs); d.text((W / 2 - d.textlength(sub, font=f2) / 2, 1652), sub, font=f2, fill=(110, 112, 122))
-        self._captions(d, abs_t); round_label(d, ri + 1, n)
-        out.alpha_composite(ov); return out.convert("RGB")
+            lo, la = R["lonlat"]
+            fact = R.get("fact") or f"{abs(la):.2f}°{'N' if la >= 0 else 'S'}, {abs(lo):.2f}°{'E' if lo >= 0 else 'W'}"
+            D.answer_card(out, W, D.T["card_y"], R["place"], fact, (t - T_CARD) / 0.45)
+        D.round_hud(out, ri + 1, n, W)
+        return out.convert("RGB")
 
     def end_frame(self, t, abs_t):
         if not hasattr(self, "_end_bg"):
             last = self.round_frame(self.rounds[-1]["tl"]["dur"] - 0.01, len(self.rounds) - 1, -1)
-            self._end_bg = last.filter(ImageFilter.GaussianBlur(14)).convert("RGBA")
-        img = self._end_bg.copy(); k = ease_out(t / 0.5)
-        ov = Image.new("RGBA", (W, H), (10, 12, 20, int(170 * k))); d = ImageDraw.Draw(ov)
-        if t > 0.15:
-            kk = ease_back((t - 0.15) / 0.4); f = font(True, 76 * kk)
-            for i, line in enumerate(["How many did", "you get right?"]):
-                d.text((W / 2 - d.textlength(line, font=f) / 2, 760 + i * 100), line, font=f, fill=(255, 255, 255))
-        if t > 0.7:
-            n = len(self.rounds)
-            pill(d, (W / 2, 1080), "Comment your score: " + ", ".join(f"{i}/{n}" for i in range(n + 1)),
-                 font(False, 36), fill=(15, 18, 28, 220))
-            pill(d, (W / 2, 1200), "New round every day · Follow", font(True, 40), fill=(40, 110, 240, 235))
-        self._captions(d, abs_t)
-        img.alpha_composite(ov); return img.convert("RGB")
+            self._end_bg = last.filter(ImageFilter.GaussianBlur(34)).convert("RGBA")
+        img = self._end_bg.copy()
+        D.end_card(img, W, H, t, len(self.rounds))
+        return img.convert("RGB")
 
     # ---- audio
     def audio(self, path):
@@ -365,7 +358,7 @@ class Reel:
         print(f"  voice lines: {len(self.clips)}, sound effects muted under speech: {getattr(self, 'skipped_sfx', 0)}")
         p = subprocess.Popen(["ffmpeg", "-y", "-loglevel", "error", "-f", "rawvideo", "-pix_fmt", "rgb24",
                               "-s", f"{W}x{H}", "-r", str(FPS), "-i", "-", "-i", wav,
-                              "-c:v", "libx264", "-preset", "veryfast", "-crf", "20", "-pix_fmt", "yuv420p",
+                              "-c:v", "libx264", "-preset", "medium", "-crf", "17", "-pix_fmt", "yuv420p",
                               "-c:a", "aac", "-b:a", "160k", "-ar", "44100", "-shortest", "-movflags", "+faststart",
                               str(out_mp4)], stdin=subprocess.PIPE)
         nf = int(self.total * FPS)

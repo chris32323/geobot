@@ -259,6 +259,19 @@
         "Tower Bridge, London, United Kingdom",
         "Niagara Falls, Canada / USA"
       ]
+    },
+    {
+      "date": "2026-11-18T20:33:58+00:00",
+      "media_id": "18076260338756380",
+      "permalink": "https://www.instagram.com/reel/Df5X-xsAdY-/",
+      "location_ids": [
+        "pisa-it",
+        "tallinn-ee"
+      ],
+      "places": [
+        "Leaning Tower, Pisa, Italy",
+        "Tallinn, Estonia"
+      ]
     }
   ],
   "no_coverage": {

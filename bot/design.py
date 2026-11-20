@@ -267,8 +267,8 @@ def timer(base, cx, cy, remain, total, frac):
 
 # ------------------------------------------------------------------ map pin
 def pin(d, x, y, color=RED, alpha=255, pulse_t=None):
-    """Teardrop pin with white ring; optional expanding pulse ring after landing."""
-    if pulse_t is not None:
+    """Teardrop pin with white ring. (The pulse ring was removed on request - pulse_t is ignored.)"""
+    if False:
         k = (pulse_t % 1.4) / 1.4
         rr = 18 + 70 * k; a = int(170 * (1 - k))
         d.ellipse([x - rr, y - rr * 0.45, x + rr, y + rr * 0.45], outline=color + (a,), width=4)

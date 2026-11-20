@@ -62,13 +62,21 @@ def blocked(history):
 
 
 def available_locations(history):
+    """(fresh, reuse): fresh = not shown in the last 60 posts; reuse = shown before, the longest ago first.
+    Places without a usable panorama (paused for 21 days) are left out of both."""
     locs = load_json(LOCATIONS, [])
-    used = set()
-    for post in history.get("posted", [])[-60:]:
-        used.update(post.get("location_ids", []))
     dead = blocked(history)
-    fresh = [l for l in locs if l["id"] not in used and l["id"] not in dead]
-    return fresh or [l for l in locs if l["id"] not in dead]
+    last_seen = {}
+    for i, post in enumerate(history.get("posted", [])):
+        for lid in post.get("location_ids", []):
+            last_seen[lid] = i
+    recent = set()
+    for post in history.get("posted", [])[-60:]:
+        recent.update(post.get("location_ids", []))
+    alive = [l for l in locs if l["id"] not in dead]
+    fresh = [l for l in alive if l["id"] not in recent]
+    reuse = sorted((l for l in alive if l["id"] in recent), key=lambda l: last_seen.get(l["id"], -1))
+    return fresh, reuse
 
 
 def weighted_order(rng, locs, weights):
@@ -93,12 +101,16 @@ def candidates_for(slot, rng, pool):
 
 
 def build_rounds(n, rng, history, demo=False):
-    rounds = []; pool = available_locations(history); tried = set()
+    rounds = []; fresh, reuse = available_locations(history); tried = set()
     if demo:
         from PIL import Image
         demo_panos = sorted(Path(config.ROOT / "demo").glob("*.jpg"))
     for slot in range(n):
-        for loc in candidates_for(slot, rng, pool):
+        # 1) places not shown recently, 2) places shown the longest time ago, 3) round 1 may then use any type
+        order = candidates_for(slot, rng, fresh) + candidates_for(slot, rng, reuse[:max(len(reuse) // 2, 10)])
+        if slot == 0:
+            order += weighted_order(rng, fresh + reuse, {"street": 1, "landscape": 1, "landmark": 1, "border": 1})
+        for loc in order:
             if loc["id"] in tried: continue
             tried.add(loc["id"])
             kind = loc.get("type", "street")
@@ -144,7 +156,7 @@ def make_caption(rounds):
             f"CC BY-SA 4.0. {links}\nMap data: Natural Earth.\n\n{config.HASHTAGS}")
 
 
-BOT_VERSION = "2026-11-18e (no pulse ring at the pin)"
+BOT_VERSION = "2026-11-20a (pulse ring removed everywhere, re-uses oldest places)"
 
 
 def cmd_render(args):

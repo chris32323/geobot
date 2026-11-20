@@ -19,7 +19,14 @@ TITLE_EDITION = os.getenv("TITLE_EDITION", "World Edition")
 HFOV_DEG = 82
 
 # ---- voice (male by default)
-TTS_ENGINE = os.getenv("TTS_ENGINE", "kokoro")            # kokoro (natural, free) | piper | openai
+TTS_ENGINE = os.getenv("TTS_ENGINE", "kokoro")            # elevenlabs | openai | kokoro (free) | piper
+# ElevenLabs (TTS_ENGINE=elevenlabs, secret ELEVENLABS_API_KEY). Defaults = the settings chosen in the ElevenLabs app.
+ELEVEN_MODEL = os.getenv("ELEVEN_MODEL") or "eleven_v4"
+ELEVEN_VOICE_ID = (os.getenv("ELEVEN_VOICE_ID") or "").strip()                       # best: copy the voice ID
+ELEVEN_VOICE_NAME = (os.getenv("ELEVEN_VOICE_NAME") or "Nick - Relatable & Engaging Friend").strip()
+ELEVEN_STABILITY = float(os.getenv("ELEVEN_STABILITY") or 0.50)
+ELEVEN_SIMILARITY = float(os.getenv("ELEVEN_SIMILARITY") or 0.58)
+ELEVEN_FORMAT = os.getenv("ELEVEN_FORMAT") or "mp3_44100_128"
 KOKORO_VOICE = os.getenv("KOKORO_VOICE", "am_michael")    # male: am_michael, am_fenrir, am_puck, am_adam, am_eric, am_liam, am_onyx, bm_george, bm_lewis, bm_daniel, bm_fable
 KOKORO_SPEED = float(os.getenv("KOKORO_SPEED", "0.9"))     # 1.0 = normal, smaller = slower
 PIPER_VOICE = os.getenv("PIPER_VOICE", "en_US-ryan-high")   # male US voice

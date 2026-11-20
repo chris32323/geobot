@@ -18,9 +18,9 @@ def intro_for(slot, n):
         return ("ROUND 1", "WHERE ARE WE?", config.TITLE_EDITION)
     if n >= 3 and slot == n - 1:
         return ("FINAL ROUND", "LAST CHANCE!", "Only the pros get this one")
-    return (f"ROUND {slot + 1}", "STILL IN?", "It gets harder now")
+    return (f"ROUND {slot + 1}", "WHERE ARE WE NOW?", "It gets harder now")
 
-SAY_INTRO = ["Alright, where in the world are we?", "Still with me? Where are we now?", "Last round. Where are we?"]
+SAY_INTRO = ["Alright, where in the world are we?", "Next round. Where are we now?", "Last round. Where are we?"]
 SAY_PAN1 = ["Take a good look around.", "Okay, this one is a little tricky.", "Take your time on this one."]
 SAY_RIGHT = "Did you get it right?"
 
@@ -156,7 +156,7 @@ def make_caption(rounds):
             f"CC BY-SA 4.0. {links}\nMap data: Natural Earth.\n\n{config.HASHTAGS}")
 
 
-BOT_VERSION = "2026-11-20a (pulse ring removed everywhere, re-uses oldest places)"
+BOT_VERSION = "2026-11-20b (ElevenLabs voice, no 'still in', re-uses oldest places)"
 
 
 def cmd_render(args):
@@ -233,14 +233,15 @@ def cmd_voices(args):
     if os.getenv("VOICE_AI_CHECK") != "1":
         voiceqa.AI_CHECK = False                     # keeps the one-time cost low; pitch check still runs
     v = Voice(Path(args.out) / "voice")
-    if v.engine != "openai":
-        sys.exit("OpenAI voice is not active (TTS_ENGINE / OPENAI_API_KEY) - nothing to record")
+    if v.engine not in ("openai", "elevenlabs"):
+        sys.exit("No AI voice is active (TTS_ENGINE + ELEVENLABS_API_KEY / OPENAI_API_KEY) - nothing to record")
     fixed = SAY_INTRO + SAY_PAN1 + [SAY_RIGHT, Reel.END_LINE]
     locs = json.loads(LOCATIONS.read_text())
     for text in fixed + [reveal_line(l) for l in locs]:
         v.say(text)
-    print(f"voice cache ready: {v.hits} already there, {v.misses} new "
-          f"(~{v.misses * 0.5:.0f} ct). Commit happens in the next step.")
+    cost = (f"{v.chars} ElevenLabs credits" if v.engine == "elevenlabs" else f"~{v.misses * 0.5:.0f} ct")
+    print(f"voice cache ready ({v.engine}): {v.hits} already there, {v.misses} new ({cost}). "
+          f"Commit happens in the next step.")
 
 
 def main(argv=None):

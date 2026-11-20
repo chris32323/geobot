@@ -298,6 +298,19 @@
         "Death Valley, USA",
         "Three-country point, Vaals, Netherlands / Belgium / Germany"
       ]
+    },
+    {
+      "date": "2026-11-20T00:39:59+00:00",
+      "media_id": "18119549666595615",
+      "permalink": "https://www.instagram.com/reel/Df8Y7fMnEhp/",
+      "location_ids": [
+        "grossglockner-at",
+        "mexicocity-mx"
+      ],
+      "places": [
+        "Grossglockner High Alpine Road, Austria",
+        "Mexico City"
+      ]
     }
   ],
   "no_coverage": {
@@ -320,6 +333,8 @@
     "pukaki-nz": "2026-11-18",
     "icefields-ca": "2026-11-18",
     "glencoe-uk": "2026-11-18",
-    "synevyr-ua": "2026-11-18"
+    "synevyr-ua": "2026-11-18",
+    "schengen-lu": "2026-11-20",
+    "fourcorners-us": "2026-11-20"
   }
 }

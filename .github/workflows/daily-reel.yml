@@ -14,7 +14,7 @@ on:
         type: boolean
         default: false
       prepare_voices:
-        description: "One-time: record ALL voice lines into data/voice/ (about 0.5 USD, then the voice is free)"
+        description: "One-time: record ALL voice lines into data/voice/ (ElevenLabs: a few thousand credits, then free)"
         type: boolean
         default: false
 
@@ -60,7 +60,13 @@ jobs:
         env:
           MAPILLARY_TOKEN: ${{ secrets.MAPILLARY_TOKEN }}
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-          TTS_ENGINE: ${{ vars.TTS_ENGINE || 'openai' }}
+          TTS_ENGINE: ${{ vars.TTS_ENGINE || 'elevenlabs' }}
+          ELEVENLABS_API_KEY: ${{ secrets.ELEVENLABS_API_KEY }}
+          ELEVEN_VOICE_ID: ${{ vars.ELEVEN_VOICE_ID }}
+          ELEVEN_VOICE_NAME: ${{ vars.ELEVEN_VOICE_NAME }}
+          ELEVEN_MODEL: ${{ vars.ELEVEN_MODEL }}
+          ELEVEN_STABILITY: ${{ vars.ELEVEN_STABILITY }}
+          ELEVEN_SIMILARITY: ${{ vars.ELEVEN_SIMILARITY }}
           OPENAI_VOICE: ${{ vars.OPENAI_VOICE || 'alloy' }}
           VOICE_STYLE: ${{ vars.VOICE_STYLE }}
           VOICE_AI_CHECK: ${{ vars.VOICE_AI_CHECK }}
@@ -104,7 +110,13 @@ jobs:
         env:
           MAPILLARY_TOKEN: ${{ secrets.MAPILLARY_TOKEN }}
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-          TTS_ENGINE: ${{ vars.TTS_ENGINE || 'openai' }}
+          TTS_ENGINE: ${{ vars.TTS_ENGINE || 'elevenlabs' }}
+          ELEVENLABS_API_KEY: ${{ secrets.ELEVENLABS_API_KEY }}
+          ELEVEN_VOICE_ID: ${{ vars.ELEVEN_VOICE_ID }}
+          ELEVEN_VOICE_NAME: ${{ vars.ELEVEN_VOICE_NAME }}
+          ELEVEN_MODEL: ${{ vars.ELEVEN_MODEL }}
+          ELEVEN_STABILITY: ${{ vars.ELEVEN_STABILITY }}
+          ELEVEN_SIMILARITY: ${{ vars.ELEVEN_SIMILARITY }}
           OPENAI_VOICE: ${{ vars.OPENAI_VOICE || 'alloy' }}
           VOICE_STYLE: ${{ vars.VOICE_STYLE }}
           VOICE_AI_CHECK: ${{ vars.VOICE_AI_CHECK }}
@@ -135,7 +147,13 @@ jobs:
         env:
           MAPILLARY_TOKEN: ${{ secrets.MAPILLARY_TOKEN }}
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-          TTS_ENGINE: ${{ vars.TTS_ENGINE || 'openai' }}
+          TTS_ENGINE: ${{ vars.TTS_ENGINE || 'elevenlabs' }}
+          ELEVENLABS_API_KEY: ${{ secrets.ELEVENLABS_API_KEY }}
+          ELEVEN_VOICE_ID: ${{ vars.ELEVEN_VOICE_ID }}
+          ELEVEN_VOICE_NAME: ${{ vars.ELEVEN_VOICE_NAME }}
+          ELEVEN_MODEL: ${{ vars.ELEVEN_MODEL }}
+          ELEVEN_STABILITY: ${{ vars.ELEVEN_STABILITY }}
+          ELEVEN_SIMILARITY: ${{ vars.ELEVEN_SIMILARITY }}
           OPENAI_VOICE: ${{ vars.OPENAI_VOICE || 'alloy' }}
           VOICE_STYLE: ${{ vars.VOICE_STYLE }}
           VOICE_AI_CHECK: ${{ vars.VOICE_AI_CHECK }}

@@ -63,8 +63,11 @@ def clean_theme(t):
             notes.append(f"bad value for '{k}' kept default")
     if out["timer_y"] + out["timer_radius"] > 450:                         # timer must stay above the map
         out["timer_y"] = 450 - out["timer_radius"]; notes.append("timer moved up (map overlap)")
-    if out["timer_y"] - out["timer_radius"] < out["hud_y"] + 70:           # ... and below the round bar
-        out["hud_y"] = max(40, out["timer_y"] - out["timer_radius"] - 70); notes.append("round bar moved up")
+    need = out["hud_y"] + 128                                               # round text + bars + stars
+    if out["timer_y"] - out["timer_radius"] < need:                         # ... and below round bar + stars
+        out["timer_y"] = min(need + out["timer_radius"], 450 - out["timer_radius"]); notes.append("timer moved down (stars)")
+        if out["timer_y"] - out["timer_radius"] < need:
+            out["hud_y"] = max(40, out["timer_y"] - out["timer_radius"] - 128); notes.append("round bar moved up")
     top = out["card_y"] - out["card_height"] / 2
     if top < 1450: out["card_y"] = int(1450 + out["card_height"] / 2); notes.append("card moved down (map overlap)")
     if out["card_y"] + out["card_height"] / 2 > 1890:
@@ -217,7 +220,23 @@ def glass_pill(base, cx, y, text, fnt, fg=WHITE, track=0, pad=(34, 16), dot=None
 
 
 # ------------------------------------------------------------------ HUD: round indicator
-def round_hud(base, rnd, total, W):
+STARS = {"easy": 1, "medium": 2, "hard": 3}
+
+
+def _star(d, cx, cy, r, filled):
+    """Five-pointed star drawn as a polygon (no font needed). White only: filled = earned, outline = not."""
+    pts = []
+    for i in range(10):
+        rad = r if i % 2 == 0 else r * 0.45
+        a = math.radians(-90 + i * 36)
+        pts.append((cx + rad * math.cos(a), cy + rad * math.sin(a)))
+    if filled:
+        d.polygon(pts, fill=(255, 255, 255, 245))
+    else:
+        d.polygon(pts, outline=(255, 255, 255, 150), width=3)
+
+
+def round_hud(base, rnd, total, W, difficulty=None):
     d = ImageDraw.Draw(base)
     hy = T["hud_y"]
     text_tracked(d, W / 2, hy, f"ROUND {rnd} OF {total}", font(True, 26), WHITE + (235,), track=5)
@@ -227,6 +246,11 @@ def round_hud(base, rnd, total, W):
         col = ACC + (255,) if i == rnd - 1 else (255, 255, 255, 150) if i < rnd - 1 else (255, 255, 255, 55)
         d.rounded_rectangle([x, hy + 46, x + bw, hy + 54], radius=4, fill=col)
         x += bw + gap
+    n = STARS.get(difficulty or "", 0)
+    if n:                                                   # difficulty: 1-3 white stars, no colour
+        r, step, cy = 16, 44, hy + 92
+        for i in range(3):
+            _star(d, W / 2 + (i - 1) * step, cy, r, i < n)
 
 
 # ------------------------------------------------------------------ timer

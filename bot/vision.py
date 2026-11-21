@@ -40,7 +40,9 @@ def check(pano, place, kind):
             "- usable = false if the photo is indoors, very dark, blurry, mostly blocked (car interior, wall, tunnel) or broken.\n"
             "- spoiler = true if readable text (signs, shop names) clearly reveals the city or exact place.\n"
             + (f"- sight_visible = true if {place} itself is clearly visible in at least one view, otherwise false.\n" if sight
-               else "- sight_visible = null.\n"))
+               else "- sight_visible = null.\n")
+            + ("- usable = false also if the view is dull (parking lot, garage, construction site, motorway wall) "
+               "instead of a beautiful landscape or a typical, characterful street.\n" if kind == "scenery" else ""))
     content = [{"type": "text", "text": task}] + [
         {"type": "image_url", "image_url": {"url": f"data:image/jpeg;base64,{b}", "detail": "low"}} for b in _views(pano)]
     try:

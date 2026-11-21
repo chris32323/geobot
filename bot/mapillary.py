@@ -286,7 +286,8 @@ def _is_outdoor(classes, need_road):
 
 # search box half-sizes in degrees: sights must be close so the landmark is actually in the picture
 SEARCH = {"landmark": (0.002, 0.004, 0.008), "border": (0.002, 0.004, 0.008),
-          "landscape": (0.004, 0.012, 0.03), "street": (0.004, 0.012, 0.03)}   # cities are dense: small boxes
+          "landscape": (0.004, 0.012, 0.03), "scenery": (0.004, 0.012, 0.03),
+          "street": (0.004, 0.012, 0.03)}   # cities are dense: small boxes
 
 
 def _sky_visible(arr):

@@ -151,7 +151,7 @@ class Reel:
             if L["intro"] is not None: v.append((0.25, L["intro"]))
             tl["intro"] = max(MIN_INTRO, 0.25 + dur(L["intro"]) + 0.2)
             tl["pan0"] = tl["intro"]
-            cur = tl["pan0"] + 0.75
+            cur = tl["pan0"] + 0.35                                 # "Can you guess it?" right as the pan starts
             for k in ("pan1", "pan2"):
                 if L[k] is not None:
                     if k == "pan2": cur = max(cur, tl["pan0"] + 2.95)
@@ -251,7 +251,7 @@ class Reel:
             if D.T["show_title_underline"]:
                 uy = y_big + size * 1.42
                 d.rounded_rectangle([W / 2 - 70, uy, W / 2 + 70, uy + 10], radius=5, fill=D.ACC)
-            D.round_hud(out, ri + 1, n, W)
+            D.round_hud(out, ri + 1, n, W, R.get("difficulty"))
             return out.convert("RGB")
         if t < T_PAN1:                                     # 360° pan
             yaw = 2 * math.pi * ease_io((t - T_PAN0) / PAN_SECONDS)
@@ -259,7 +259,7 @@ class Reel:
             out.alpha_composite(self._vig)
             D.timer(out, W / 2, D.T["timer_y"], PAN_SECONDS - (t - T_PAN0), PAN_SECONDS, (t - T_PAN0) % 1)
             D.glass_pill(out, W / 2, 1720, "360°  ·  LOOK AROUND", D.font(True, 28), track=4)
-            D.round_hud(out, ri + 1, n, W)
+            D.round_hud(out, ri + 1, n, W, R.get("difficulty"))
             return out.convert("RGB")
         # ---- map phase
         k_in = ease_out((t - T_PAN1) / (T_SLIDE1 - T_PAN1))
@@ -293,7 +293,7 @@ class Reel:
             lo, la = R["lonlat"]
             fact = R.get("fact") or f"{abs(la):.2f}°{'N' if la >= 0 else 'S'}, {abs(lo):.2f}°{'E' if lo >= 0 else 'W'}"
             D.answer_card(out, W, D.T["card_y"], R["place"], fact, (t - T_CARD) / 0.45)
-        D.round_hud(out, ri + 1, n, W)
+        D.round_hud(out, ri + 1, n, W, R.get("difficulty"))
         return out.convert("RGB")
 
     def end_frame(self, t, abs_t):

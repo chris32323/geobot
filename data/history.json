@@ -363,6 +363,19 @@
         "Cloud Gate, Chicago, USA",
         "Plovdiv, Bulgaria"
       ]
+    },
+    {
+      "date": "2026-11-21T21:41:56+00:00",
+      "media_id": "18006150264040370",
+      "permalink": "https://www.instagram.com/reel/DgBOJDllAf3/",
+      "location_ids": [
+        "machupicchu-pe",
+        "blueridge-us"
+      ],
+      "places": [
+        "Machu Picchu, Peru",
+        "Blue Ridge Parkway, USA"
+      ]
     }
   ],
   "no_coverage": {
@@ -391,6 +404,9 @@
     "vermont-us": "2026-11-21",
     "lasvegas-us": "2026-11-21",
     "douro-pt": "2026-11-21",
-    "namib-na": "2026-11-21"
+    "namib-na": "2026-11-21",
+    "seward-us": "2026-11-21",
+    "accra-gh": "2026-11-21",
+    "hallstatt-at": "2026-11-21"
   }
 }

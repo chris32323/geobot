@@ -337,6 +337,19 @@
         "Charles Bridge, Prague, Czechia",
         "Dublin, Ireland"
       ]
+    },
+    {
+      "date": "2026-11-21T00:30:17+00:00",
+      "media_id": "18134757487806968",
+      "permalink": "https://www.instagram.com/reel/Df-8naJAU4C/",
+      "location_ids": [
+        "atomium-be",
+        "edinburgh-uk"
+      ],
+      "places": [
+        "Atomium, Brussels, Belgium",
+        "Edinburgh, United Kingdom"
+      ]
     }
   ],
   "no_coverage": {

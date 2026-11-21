@@ -156,7 +156,7 @@ def make_caption(rounds):
             f"CC BY-SA 4.0. {links}\nMap data: Natural Earth.\n\n{config.HASHTAGS}")
 
 
-BOT_VERSION = "2026-11-20b (ElevenLabs voice, no 'still in', re-uses oldest places)"
+BOT_VERSION = "2026-11-21a (ElevenLabs only - OpenAI voice removed)"
 
 
 def cmd_render(args):
@@ -228,20 +228,18 @@ def cmd_voices(args):
     print(f"geobot version {BOT_VERSION}")
     from . import voiceqa
     from .render import Reel
-    import os
-    from .voice import Voice
-    if os.getenv("VOICE_AI_CHECK") != "1":
-        voiceqa.AI_CHECK = False                     # keeps the one-time cost low; pitch check still runs
+    from .voice import Voice, prune_cache
     v = Voice(Path(args.out) / "voice")
-    if v.engine not in ("openai", "elevenlabs"):
-        sys.exit("No AI voice is active (TTS_ENGINE + ELEVENLABS_API_KEY / OPENAI_API_KEY) - nothing to record")
+    if v.engine != "elevenlabs":
+        sys.exit("ElevenLabs is not the active voice (TTS_ENGINE) - nothing to record")
     fixed = SAY_INTRO + SAY_PAN1 + [SAY_RIGHT, Reel.END_LINE]
     locs = json.loads(LOCATIONS.read_text())
-    for text in fixed + [reveal_line(l) for l in locs]:
+    texts = fixed + [reveal_line(l) for l in locs]
+    for text in texts:
         v.say(text)
-    cost = (f"{v.chars} ElevenLabs credits" if v.engine == "elevenlabs" else f"~{v.misses * 0.5:.0f} ct")
-    print(f"voice cache ready ({v.engine}): {v.hits} already there, {v.misses} new ({cost}). "
-          f"Commit happens in the next step.")
+    removed = prune_cache(texts)
+    print(f"voice cache ready (ElevenLabs): {v.hits} already there, {v.misses} new (~{v.chars} credits), "
+          f"{removed} old recordings deleted (e.g. OpenAI). Commit happens in the next step.")
 
 
 def main(argv=None):

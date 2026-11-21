@@ -16,7 +16,7 @@ MAX_PITCH_HZ = float(os.getenv("VOICE_MAX_PITCH_HZ") or 0)      # 0 = off; e.g. 
 MAX_JUMPS = int(os.getenv("VOICE_MAX_JUMPS") or 1)              # allowed sudden pitch jumps per line
 MAX_SWING = float(os.getenv("VOICE_MAX_SWING") or 13)           # semitones between low (5%) and high (95%) pitch
 TRIES = int(os.getenv("VOICE_QA_TRIES") or 4)                   # max takes per line
-AI_CHECK = (os.getenv("VOICE_AI_CHECK") or "1") != "0"
+AI_CHECK = (os.getenv("VOICE_AI_CHECK") or "0") == "1"   # off unless VOICE_AI_CHECK=1
 AI_MODEL = os.getenv("VOICE_AI_MODEL") or "gpt-audio-1.5"
 
 

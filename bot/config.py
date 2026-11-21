@@ -19,7 +19,7 @@ TITLE_EDITION = os.getenv("TITLE_EDITION", "World Edition")
 HFOV_DEG = 82
 
 # ---- voice (male by default)
-TTS_ENGINE = os.getenv("TTS_ENGINE", "kokoro")            # elevenlabs | openai | kokoro (free) | piper
+TTS_ENGINE = os.getenv("TTS_ENGINE") or "elevenlabs"      # elevenlabs (Nick) | kokoro / piper (offline, only if set)
 # ElevenLabs (TTS_ENGINE=elevenlabs, secret ELEVENLABS_API_KEY). Defaults = the settings chosen in the ElevenLabs app.
 ELEVEN_MODEL = os.getenv("ELEVEN_MODEL") or "eleven_v4"
 ELEVEN_VOICE_ID = (os.getenv("ELEVEN_VOICE_ID") or "").strip()                       # best: copy the voice ID
@@ -30,21 +30,6 @@ ELEVEN_FORMAT = os.getenv("ELEVEN_FORMAT") or "mp3_44100_128"
 KOKORO_VOICE = os.getenv("KOKORO_VOICE", "am_michael")    # male: am_michael, am_fenrir, am_puck, am_adam, am_eric, am_liam, am_onyx, bm_george, bm_lewis, bm_daniel, bm_fable
 KOKORO_SPEED = float(os.getenv("KOKORO_SPEED", "0.9"))     # 1.0 = normal, smaller = slower
 PIPER_VOICE = os.getenv("PIPER_VOICE", "en_US-ryan-high")   # male US voice
-OPENAI_VOICE = (os.getenv("OPENAI_VOICE") or "alloy").strip().lower()   # any OpenAI voice name you type
-DEFAULT_STYLE = """Voice: Adult male, around 30, warm and grounded, relaxed low-to-mid pitch. Steady and stable, never strained or high.
-
-Delivery: A friendly geography quiz host talking to one viewer, like a friend sitting next to them. Natural, conversational, slightly smiling. Every line is short, so say it calmly and completely, with a clear beginning and a relaxed, falling ending.
-
-Questions: Curious and inviting, but low-key. Do not push the pitch up at the end.
-
-Reveals: Confident and warm, a tiny pause before the place name, then say the name clearly.
-
-Pacing: Medium, smooth, unhurried. No rushing, no dramatic pauses.
-
-Never: theatrical, hyped, cinematic, announcer-style, excited shouting, whispering or movie-trailer voice."""
-VOICE_STYLE = (os.getenv("VOICE_STYLE") or DEFAULT_STYLE).strip()   # your own text in the VOICE_STYLE variable wins
-OPENAI_SPEED = float(os.getenv("OPENAI_SPEED") or 1.0)                 # 0.8 slower ... 1.3 faster
-OPENAI_TTS_MODEL = os.getenv("OPENAI_TTS_MODEL") or "gpt-realtime-2.1"   # most realistic; falls back to gpt-audio-1.5
 REQUIRE_VOICE = os.getenv("REQUIRE_VOICE", "1") == "1"
 VOICE_PITCH = float(os.getenv("VOICE_PITCH", "1.0"))       # 1.0 = original Ryan; < 1 = deeper
 VOICE_SPEED = float(os.getenv("VOICE_SPEED", "1.4"))       # Piper length scale: 1.0 = fast default, 1.4 = slow and clear

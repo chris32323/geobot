@@ -136,7 +136,7 @@ def build_rounds(n, rng, history, demo=False):
                 pano=pano, lonlat=(loc["lon"], loc["lat"]) if kind != "street" else (meta["lon"], meta["lat"]),
                 place=loc["name"] if loc["country"] in loc["name"] else f"{loc['name']}, {loc['country']}",
                 fact=fact, loc_id=loc["id"], intro=intro_for(slot, n),
-                lines=dict(intro=SAY_INTRO[min(slot, 2)], pan1=SAY_PAN1[min(slot, 2)], reveal=reveal),
+                lines=dict(intro=SAY_INTRO[min(slot, 2)], reveal=reveal),      # no comment during the 360° pan
                 credit="Imagery: Mapillary · CC BY-SA 4.0",
                 meta=meta))
             break
@@ -156,7 +156,7 @@ def make_caption(rounds):
             f"CC BY-SA 4.0. {links}\nMap data: Natural Earth.\n\n{config.HASHTAGS}")
 
 
-BOT_VERSION = "2026-11-21a (ElevenLabs only - OpenAI voice removed)"
+BOT_VERSION = "2026-11-21b (ElevenLabs only, no comment during the pan)"
 
 
 def cmd_render(args):
@@ -232,7 +232,7 @@ def cmd_voices(args):
     v = Voice(Path(args.out) / "voice")
     if v.engine != "elevenlabs":
         sys.exit("ElevenLabs is not the active voice (TTS_ENGINE) - nothing to record")
-    fixed = SAY_INTRO + SAY_PAN1 + [SAY_RIGHT, Reel.END_LINE]
+    fixed = SAY_INTRO + [SAY_RIGHT, Reel.END_LINE]
     locs = json.loads(LOCATIONS.read_text())
     texts = fixed + [reveal_line(l) for l in locs]
     for text in texts:

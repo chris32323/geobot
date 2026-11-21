@@ -324,6 +324,19 @@
         "Skógafoss, Iceland",
         "Bangkok, Thailand"
       ]
+    },
+    {
+      "date": "2026-11-21T00:12:20+00:00",
+      "media_id": "18109360544323181",
+      "permalink": "https://www.instagram.com/reel/Df-6kDagfkM/",
+      "location_ids": [
+        "charlesbridge-cz",
+        "dublin-ie"
+      ],
+      "places": [
+        "Charles Bridge, Prague, Czechia",
+        "Dublin, Ireland"
+      ]
     }
   ],
   "no_coverage": {
@@ -348,6 +361,7 @@
     "glencoe-uk": "2026-11-18",
     "synevyr-ua": "2026-11-18",
     "schengen-lu": "2026-11-20",
-    "fourcorners-us": "2026-11-20"
+    "fourcorners-us": "2026-11-20",
+    "vermont-us": "2026-11-21"
   }
 }

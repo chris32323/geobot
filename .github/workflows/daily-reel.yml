@@ -17,6 +17,10 @@ on:
         description: "One-time: record ALL voice lines into data/voice/ (ElevenLabs: a few thousand credits, then free)"
         type: boolean
         default: false
+      youtube_test:
+        description: "Test YouTube: upload this video as PRIVATE to YouTube (works together with dry_run)"
+        type: boolean
+        default: false
 
 permissions:
   contents: write                 # create releases (video hosting) + commit history.json
@@ -66,6 +70,7 @@ jobs:
           ELEVEN_MODEL: ${{ vars.ELEVEN_MODEL }}
           ELEVEN_STABILITY: ${{ vars.ELEVEN_STABILITY }}
           ELEVEN_SIMILARITY: ${{ vars.ELEVEN_SIMILARITY }}
+          ELEVEN_BUDGET: ${{ vars.ELEVEN_BUDGET }}
           VOICE_AI_CHECK: ${{ vars.VOICE_AI_CHECK }}
           VOICE_QA_TRIES: ${{ vars.VOICE_QA_TRIES }}
           VOICE_MAX_PITCH_HZ: ${{ vars.VOICE_MAX_PITCH_HZ }}
@@ -111,6 +116,7 @@ jobs:
           ELEVEN_MODEL: ${{ vars.ELEVEN_MODEL }}
           ELEVEN_STABILITY: ${{ vars.ELEVEN_STABILITY }}
           ELEVEN_SIMILARITY: ${{ vars.ELEVEN_SIMILARITY }}
+          ELEVEN_BUDGET: ${{ vars.ELEVEN_BUDGET }}
           VOICE_AI_CHECK: ${{ vars.VOICE_AI_CHECK }}
           VOICE_QA_TRIES: ${{ vars.VOICE_QA_TRIES }}
           VOICE_MAX_PITCH_HZ: ${{ vars.VOICE_MAX_PITCH_HZ }}
@@ -143,6 +149,7 @@ jobs:
           ELEVEN_MODEL: ${{ vars.ELEVEN_MODEL }}
           ELEVEN_STABILITY: ${{ vars.ELEVEN_STABILITY }}
           ELEVEN_SIMILARITY: ${{ vars.ELEVEN_SIMILARITY }}
+          ELEVEN_BUDGET: ${{ vars.ELEVEN_BUDGET }}
           VOICE_AI_CHECK: ${{ vars.VOICE_AI_CHECK }}
           VOICE_QA_TRIES: ${{ vars.VOICE_QA_TRIES }}
           VOICE_MAX_PITCH_HZ: ${{ vars.VOICE_MAX_PITCH_HZ }}
@@ -180,6 +187,15 @@ jobs:
           IG_USER_ID: ${{ secrets.IG_USER_ID }}
           IG_ACCESS_TOKEN: ${{ secrets.IG_ACCESS_TOKEN }}
         run: python -m bot.main publish --out out --video-url "${{ steps.host.outputs.url }}"
+
+      - name: Publish to YouTube Shorts (skipped if the YT_ secrets are not set)
+        if: ${{ !cancelled() && steps.host.outcome == 'success' && (github.event_name == 'schedule' || inputs.dry_run == false || inputs.youtube_test == true) }}
+        env:
+          YT_CLIENT_ID: ${{ secrets.YT_CLIENT_ID }}
+          YT_CLIENT_SECRET: ${{ secrets.YT_CLIENT_SECRET }}
+          YT_REFRESH_TOKEN: ${{ secrets.YT_REFRESH_TOKEN }}
+          YT_PRIVACY: ${{ inputs.youtube_test == true && 'private' || vars.YT_PRIVACY }}
+        run: python -m bot.youtube --out out
 
       - name: Save history (also keeps the schedule alive)
         if: always()

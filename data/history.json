@@ -402,6 +402,19 @@
         "Gateway of India, Mumbai",
         "Belgrade, Serbia"
       ]
+    },
+    {
+      "date": "2026-11-22T23:47:43+00:00",
+      "media_id": "18106607477353311",
+      "permalink": "https://www.instagram.com/reel/DgEBVtbDykz/",
+      "location_ids": [
+        "yosemite-us",
+        "blackforest-de"
+      ],
+      "places": [
+        "Yosemite Valley, USA",
+        "Black Forest, Germany"
+      ]
     }
   ],
   "no_coverage": {
@@ -434,6 +447,9 @@
     "seward-us": "2026-11-21",
     "accra-gh": "2026-11-21",
     "hallstatt-at": "2026-11-21",
-    "antigua-gt": "2026-11-22"
+    "antigua-gt": "2026-11-22",
+    "marinabay-sg": "2026-11-22",
+    "dubrovnik-hr": "2026-11-22",
+    "moab-us": "2026-11-22"
   }
 }

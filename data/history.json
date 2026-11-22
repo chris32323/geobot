@@ -389,6 +389,19 @@
         "Angkor Wat, Cambodia",
         "Chania, Crete, Greece"
       ]
+    },
+    {
+      "date": "2026-11-22T23:12:27+00:00",
+      "media_id": "18110531639205577",
+      "permalink": "https://www.instagram.com/reel/DgD9S1KiDio/",
+      "location_ids": [
+        "gateway-in",
+        "belgrade-rs"
+      ],
+      "places": [
+        "Gateway of India, Mumbai",
+        "Belgrade, Serbia"
+      ]
     }
   ],
   "no_coverage": {
@@ -420,6 +433,7 @@
     "namib-na": "2026-11-21",
     "seward-us": "2026-11-21",
     "accra-gh": "2026-11-21",
-    "hallstatt-at": "2026-11-21"
+    "hallstatt-at": "2026-11-21",
+    "antigua-gt": "2026-11-22"
   }
 }

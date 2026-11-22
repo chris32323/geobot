@@ -376,6 +376,19 @@
         "Machu Picchu, Peru",
         "Blue Ridge Parkway, USA"
       ]
+    },
+    {
+      "date": "2026-11-22T21:47:27+00:00",
+      "media_id": "18025918985945222",
+      "permalink": "https://www.instagram.com/reel/DgDzkZVmBWr/",
+      "location_ids": [
+        "angkor-kh",
+        "chania-gr"
+      ],
+      "places": [
+        "Angkor Wat, Cambodia",
+        "Chania, Crete, Greece"
+      ]
     }
   ],
   "no_coverage": {

@@ -415,6 +415,19 @@
         "Yosemite Valley, USA",
         "Black Forest, Germany"
       ]
+    },
+    {
+      "date": "2026-11-23T00:33:39+00:00",
+      "media_id": "18103012247084920",
+      "permalink": "https://www.instagram.com/reel/DgEGlzhjjRo/",
+      "location_ids": [
+        "lombard-us",
+        "bergen-no"
+      ],
+      "places": [
+        "Lombard Street, San Francisco, USA",
+        "Bergen, Bryggen, Norway"
+      ]
     }
   ],
   "no_coverage": {
@@ -450,6 +463,7 @@
     "antigua-gt": "2026-11-22",
     "marinabay-sg": "2026-11-22",
     "dubrovnik-hr": "2026-11-22",
-    "moab-us": "2026-11-22"
+    "moab-us": "2026-11-22",
+    "hongkong-hk": "2026-11-23"
   }
 }

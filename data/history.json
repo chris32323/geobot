@@ -428,6 +428,19 @@
         "Lombard Street, San Francisco, USA",
         "Bergen, Bryggen, Norway"
       ]
+    },
+    {
+      "date": "2026-11-25T19:20:30+00:00",
+      "media_id": "17919437943496561",
+      "permalink": "https://www.instagram.com/reel/DgLRIjSx9uT/",
+      "location_ids": [
+        "arc-fr",
+        "haivan-vn"
+      ],
+      "places": [
+        "Arc de Triomphe, Paris, France",
+        "Hai Van Pass, Vietnam"
+      ]
     }
   ],
   "no_coverage": {

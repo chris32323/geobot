@@ -441,6 +441,19 @@
         "Arc de Triomphe, Paris, France",
         "Hai Van Pass, Vietnam"
       ]
+    },
+    {
+      "date": "2026-11-26T00:22:21+00:00",
+      "media_id": "17926330848448711",
+      "permalink": "https://www.instagram.com/reel/DgLzrh5oVYi/",
+      "location_ids": [
+        "hollywood-us",
+        "kotor-me"
+      ],
+      "places": [
+        "Hollywood Boulevard, Los Angeles, USA",
+        "Kotor, Montenegro"
+      ]
     }
   ],
   "no_coverage": {
@@ -481,6 +494,9 @@
     "giza-eg": "2026-11-25",
     "nullarbor-au": "2026-11-25",
     "oaxaca-mx": "2026-11-25",
-    "valensole-fr": "2026-11-25"
+    "valensole-fr": "2026-11-25",
+    "moselle-de": "2026-11-26",
+    "lapland-fi": "2026-11-26",
+    "wellington-nz": "2026-11-26"
   }
 }

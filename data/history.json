@@ -454,6 +454,19 @@
         "Hollywood Boulevard, Los Angeles, USA",
         "Kotor, Montenegro"
       ]
+    },
+    {
+      "date": "2026-11-28T00:05:36+00:00",
+      "media_id": "18117186781854276",
+      "permalink": "https://www.instagram.com/reel/DgQ7W4iB7ZL/",
+      "location_ids": [
+        "acropolis-gr",
+        "kerry-ie"
+      ],
+      "places": [
+        "Acropolis, Athens, Greece",
+        "Kenmare, Ring of Kerry, Ireland"
+      ]
     }
   ],
   "no_coverage": {
@@ -498,6 +511,7 @@
     "moselle-de": "2026-11-26",
     "lapland-fi": "2026-11-26",
     "wellington-nz": "2026-11-26",
-    "shirakawa-jp": "2026-11-27"
+    "shirakawa-jp": "2026-11-27",
+    "rushmore-us": "2026-11-28"
   }
 }
